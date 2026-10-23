@@ -1,66 +1,123 @@
+
 import json
-import traceback
-from datetime import datetime, timezone
+import os
 from pathlib import Path
-from urllib.parse import urlparse
+from playwright.sync_api import sync_playwright
 
-import requests
-from facebook_scraper import get_posts
+CONFIG_FILE = "pages.json"
+OUTPUT_FILE = Path("results/facebook_browser_test.json")
 
-BASE = Path(__file__).resolve().parent
-config = json.loads((BASE / "pages.json").read_text(encoding="utf-8"))
-results = []
 
-for page in config["pages"]:
-    if not page.get("enabled", True):
-        continue
-    url = page["url"].rstrip("/")
-    parsed = urlparse(url)
-    if parsed.hostname not in ("facebook.com", "www.facebook.com", "m.facebook.com"):
-        print(f"SKIP: Unsupported domain: {url}", flush=True)
-        continue
-    page_id = parsed.path.strip("/")
-    if not page_id or "/" in page_id or page_id == "profile.php":
-        print(f"SKIP: Use a simple Facebook Page URL: {url}", flush=True)
-        continue
+def main():
+    with open(CONFIG_FILE, "r", encoding="utf-8") as file:
+        config = json.load(file)
 
-    print(f"\n=== {page['name']}: {url} ===", flush=True)
-    try:
-        response = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
-        print(f"PUBLIC_PAGE_HTTP_STATUS: {response.status_code}", flush=True)
-        print(f"PUBLIC_PAGE_FINAL_URL: {response.url}", flush=True)
-    except requests.RequestException as exc:
-        print(f"PUBLIC_PAGE_REQUEST_ERROR: {type(exc).__name__}: {exc}", flush=True)
+    pages = config.get("pages", [])
+    results = []
 
-    try:
-        count = 0
-        for post in get_posts(page_id, pages=10, options={"comments": False, "allow_extra_requests": False}):
-            text = post.get("text") or ""
-            item = {
-                "source": page["name"],
-                "post_id": post.get("post_id"),
-                "date": post["time"].isoformat() if post.get("time") else None,
-                "url": post.get("post_url"),
-                "text": text,
-            }
-            results.append(item)
-            count += 1
-            print(f"POST {count}: id={item['post_id']} text_chars={len(text)} url={item['url']}", flush=True)
-            if text:
-                print(f"TEXT_PREVIEW: {text[:500]!r}", flush=True)
-            if count >= int(config.get("posts_per_page", 3)):
-                break
-        print(f"EXTRACTED_POSTS: {count}", flush=True)
-        if count == 0:
-            print("NO_POSTS: public access may be restricted or scraper incompatible", flush=True)
-    except Exception as exc:
-        print(f"SCRAPER_ERROR: {type(exc).__name__}: {exc}", flush=True)
-        traceback.print_exc(limit=3)
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
 
-output = BASE / "results" / "facebook_test.json"
-output.parent.mkdir(parents=True, exist_ok=True)
-output.write_text(json.dumps({
-    "checked_at": datetime.now(timezone.utc).isoformat(),
-    "posts": results,
-}, ensure_ascii=False, indent=2), encoding="utf-8")
-print(f"\nRESULT: {len(results)} posts saved to {output}", flush=True)
+        for item in pages:
+            if not item.get("enabled", True):
+                continue
+
+            name = item.get("name", "Unknown")
+            url = item.get("url")
+
+            if not url:
+                continue
+
+            print(f"\nCHECKING: {name}")
+            print(f"URL: {url}")
+
+            context = browser.new_context(
+                locale="en-US",
+                viewport={"width": 1365, "height": 900}
+            )
+
+            page = context.new_page()
+
+            try:
+                response = page.goto(
+                    url,
+                    wait_until="domcontentloaded",
+                    timeout=45000
+                )
+
+                page.wait_for_timeout(5000)
+
+                status = response.status if response else None
+                title = page.title()
+                final_url = page.url
+
+                articles = page.locator('[role="article"]').all()
+                posts = []
+
+                for article in articles[:10]:
+                    text = article.inner_text(timeout=5000).strip()
+
+                    if text:
+                        posts.append({
+                            "text": text,
+                            "length": len(text)
+                        })
+
+                body_text = page.locator("body").inner_text(
+                    timeout=10000
+                )
+
+                login_detected = any(
+                    phrase in body_text.lower()
+                    for phrase in [
+                        "log in to facebook",
+                        "log into facebook",
+                        "you must log in"
+                    ]
+                )
+
+                print(f"HTTP_STATUS: {status}")
+                print(f"PAGE_TITLE: {title}")
+                print(f"FINAL_URL: {final_url}")
+                print(f"BODY_LENGTH: {len(body_text)}")
+                print(f"LOGIN_DETECTED: {login_detected}")
+                print(f"ARTICLES_FOUND: {len(articles)}")
+                print(f"POSTS_EXTRACTED: {len(posts)}")
+
+                results.append({
+                    "name": name,
+                    "url": url,
+                    "status": status,
+                    "title": title,
+                    "final_url": final_url,
+                    "login_detected": login_detected,
+                    "body_length": len(body_text),
+                    "articles_found": len(articles),
+                    "posts": posts
+                })
+
+            except Exception as error:
+                print(f"ERROR: {type(error).__name__}: {error}")
+
+                results.append({
+                    "name": name,
+                    "url": url,
+                    "error": str(error)
+                })
+
+            finally:
+                context.close()
+
+        browser.close()
+
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_FILE.write_text(
+        json.dumps(results, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
+
+    print(f"\nRESULTS_SAVED: {OUTPUT_FILE}")
+
+
+if __name__ == "__main__":
+    main()
