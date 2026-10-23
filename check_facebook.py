@@ -125,3 +125,5 @@ def main():
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_FILE.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding='utf-8')
     print(f'RESULTS_SAVED: {OUTPUT_FILE}', flush=True)
+if __name__ == "__main__":
+    main()
