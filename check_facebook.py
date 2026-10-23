@@ -93,4 +93,4 @@ def main():
                     text = data['text']
                     if not text:
                         continue
-                    still_truncated = bool(re.search(r'(?:…|\.\.\.)\s*See more', text, re.IGNORECASE))
+                    still_truncated = "see more" in text.lower()
