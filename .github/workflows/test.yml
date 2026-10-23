@@ -24,7 +24,7 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Check Facebook pages
-        run: python check_facebook.py
+        run: python -u -c "import check_facebook; check_facebook.main()"
 
       - name: Upload diagnostic results
         if: always()
