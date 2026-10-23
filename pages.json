@@ -1,0 +1,6 @@
+{
+  "pages": [
+    {"name": "NASA", "url": "https://www.facebook.com/NASA", "enabled": true}
+  ],
+  "posts_per_page": 3
+}
