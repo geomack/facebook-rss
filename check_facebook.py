@@ -34,7 +34,7 @@ for page in config["pages"]:
 
     try:
         count = 0
-        for post in get_posts(page_id, pages=2, options={"comments": False, "allow_extra_requests": False}):
+        for post in get_posts(page_id, pages=10, options={"comments": False, "allow_extra_requests": False}):
             text = post.get("text") or ""
             item = {
                 "source": page["name"],
