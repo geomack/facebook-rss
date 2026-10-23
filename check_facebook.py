@@ -22,8 +22,8 @@ def expand_post(article):
       const els = [...root.querySelectorAll('div, span, a, button')];
       const candidates = els.filter(el => {
         const text = (el.innerText || '').trim();
-        return /^(?:…\\s*)?See more$/i.test(text) &&
-               ![...el.children].some(c => /^(?:…\\s*)?See more$/i.test((c.innerText || '').trim()));
+        return /^(?:…\s*)?See more$/i.test(text) &&
+               ![...el.children].some(c => /^(?:…\s*)?See more$/i.test((c.innerText || '').trim()));
       });
       if (!candidates.length) return false;
       candidates[0].click();
@@ -48,7 +48,7 @@ def article_data(article, base_url):
         try { return new URL(a.getAttribute('href'), baseUrl).href; }
         catch { return null; }
       }).filter(Boolean);
-      const postLinks = links.filter(h => /\\/posts\\/|\\/videos\\/|\\/reel\\/|\\/permalink\\/|\\/photo\\/|story_fbid=|\\/watch\\/\\?v=/.test(h));
+      const postLinks = links.filter(h => /\/posts\/|\/videos\/|\/reel\/|\/permalink\/|\/photo\/|story_fbid=|\/watch\/\?v=/.test(h));
       return {text, links: [...new Set(postLinks)], nested_comments: nested.length};
     }''', base_url)
 
@@ -94,36 +94,3 @@ def main():
                     if not text:
                         continue
                     still_truncated = bool(re.search(r'(?:…|\.\.\.)\s*See more', text, re.IGNORECASE))
-                    post = {
-                        'text': text,
-                        'length': len(text),
-                        'expanded': expanded,
-                        'still_truncated': still_truncated,
-                        'post_links': data['links'],
-                        'nested_comments': data['nested_comments'],
-                    }
-                    extracted.append(post)
-                    print(f'POST_CANDIDATE_{len(extracted)}: chars={len(text)}, expanded={expanded}, truncated={still_truncated}, links={len(data["links"])}', flush=True)
-                    print(f'TEXT_PREVIEW: {text[:350]!r}', flush=True)
-                print(f'HTTP_STATUS: {response.status if response else "unknown"}', flush=True)
-                print(f'ARTICLES_FOUND: {article_count}', flush=True)
-                print(f'TOP_LEVEL_CANDIDATES: {len(extracted)}', flush=True)
-                results.append({
-                    'name': name,
-                    'url': url,
-                    'status': response.status if response else None,
-                    'final_url': page.url,
-                    'articles_found': article_count,
-                    'posts': extracted,
-                })
-            except Exception as exc:
-                print(f'ERROR: {type(exc).__name__}: {exc}', flush=True)
-                results.append({'name': name, 'url': url, 'error': str(exc)})
-            finally:
-                context.close()
-        browser.close()
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_FILE.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding='utf-8')
-    print(f'RESULTS_SAVED: {OUTPUT_FILE}', flush=True)
-if __name__ == "__main__":
-    main()
