@@ -98,7 +98,7 @@ def build_feed(items, *, title, site_url, feed_url, description, icon_url):
         ET.SubElement(node, "pubDate").text = format_datetime(datetime.fromisoformat(item["first_seen"]))
         ET.SubElement(node, "description").text = item["text"]
         ET.SubElement(node, "{" + CONTENT_NS + "}encoded").text = (
-            "<p>" + escape(item["text"]).replace("\\n", "<br/>") + "</p>"
+            "<p>" + escape(item["text"]).replace("\n", "<br/>") + "</p>"
         )
     return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
 
