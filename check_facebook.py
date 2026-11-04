@@ -70,11 +70,23 @@ def main():
             try:
                 response = page.goto(url, wait_until='domcontentloaded', timeout=45000)
                 page.wait_for_timeout(4000)
+                # Load more publicly visible posts. Facebook can lazy-load content
+                # after scrolling, so checking the first screen alone is insufficient.
+                for scroll in range(5):
+                    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                    page.wait_for_timeout(1600)
+                    print(f'SCROLL_{scroll + 1}: articles={page.locator(\'[role="article"]\').count()}', flush=True)
+                page.evaluate("window.scrollTo(0, 0)")
+                page.wait_for_timeout(500)
+                page_title = page.title()
+                body_preview = page.locator("body").inner_text(timeout=12000)[:850]
+                print(f'PAGE_TITLE: {page_title}', flush=True)
+                print(f'PAGE_BODY_PREVIEW: {body_preview!r}', flush=True)
                 # A nested comment can be role=article; keep only top-level containers.
                 articles = page.locator('[role="article"]')
                 article_count = articles.count()
                 extracted = []
-                for i in range(min(article_count, 30)):
+                for i in range(min(article_count, 80)):
                     article = articles.nth(i)
                     if article.evaluate("el => Boolean(el.parentElement?.closest('[role=article]'))"):
                         continue
@@ -108,6 +120,7 @@ def main():
                 print(f'HTTP_STATUS: {response.status if response else "unknown"}', flush=True)
                 print(f'ARTICLES_FOUND: {article_count}', flush=True)
                 print(f'TOP_LEVEL_CANDIDATES: {len(extracted)}', flush=True)
+                print(f'SOURCE_SUMMARY: {name}: articles={article_count} candidates={len(extracted)}', flush=True)
                 results.append({
                     'name': name,
                     'url': url,
