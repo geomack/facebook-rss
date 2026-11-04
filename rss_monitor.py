@@ -55,7 +55,7 @@ def clean_text(raw, name):
     lines = [line.strip() for line in raw.splitlines() if line.strip() and line.strip() != "·"]
     if lines and (lines[0] == name or lines[0].startswith(name + " - ")):
         lines.pop(0)
-    relative = r"(?:\d+\s+(?:seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s+ago|\d+[smhdwy])"
+    relative = r"(?:(?:about\s+)?(?:a|an|one|\d+)\s+(?:seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s+ago|just now|yesterday|\d+[smhdwy])"
     absolute = r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+\w+\s+\d{1,2},?\s+\d{4}\s+at\s+.+"
     # Facebook may put relative and absolute dates in either order.
     while lines and (re.fullmatch(relative, lines[0], flags=re.I) or re.fullmatch(absolute, lines[0], flags=re.I)):
