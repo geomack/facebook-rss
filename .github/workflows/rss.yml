@@ -72,12 +72,13 @@ jobs:
 
       - name: Commit feed and seen posts
         run: |
+          git config pull.rebase true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/feed.xml docs/feed-test.xml docs/telegram.xml state/posts.json
           if ! git diff --cached --quiet; then
             git commit -m "Update Facebook and Telegram RSS"
-            git pull --rebase origin main
+            git pull --rebase -X theirs origin main
             git push origin HEAD:main
           else
             echo "No feed changes"
