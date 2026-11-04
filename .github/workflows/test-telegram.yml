@@ -1,0 +1,29 @@
+name: Test Telegram public channel
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'telegram.json'
+      - 'telegram_collector.py'
+      - '.github/workflows/test-telegram.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install HTML parser
+        run: python -m pip install beautifulsoup4
+      - name: Collect Telegram channel
+        run: python -u telegram_collector.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: telegram-test
+          path: results/telegram_posts.json
+          if-no-files-found: ignore
