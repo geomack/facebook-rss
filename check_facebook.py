@@ -53,6 +53,59 @@ def article_data(article, base_url):
     }''', base_url)
 
 
+def dismiss_initial_login_prompt(page):
+    """Dismiss only a visible, user-dismissible login overlay."""
+    dialogs = page.locator('[role="dialog"]')
+    for i in range(min(dialogs.count(), 5)):
+        dialog = dialogs.nth(i)
+        try:
+            if not dialog.is_visible():
+                continue
+            close_buttons = dialog.locator(
+                '[aria-label="Close"], [aria-label="Закрыть"], '
+                '[aria-label="Закрити"], [aria-label="Dismiss"], '
+                '[role="button"][aria-label*="Close"], button[aria-label*="Close"]'
+            )
+            for j in range(min(close_buttons.count(), 5)):
+                btn = close_buttons.nth(j)
+                if btn.is_visible():
+                    btn.click(timeout=2000)
+                    page.wait_for_timeout(500)
+                    return True
+        except Exception as exc:
+            print(f'LOGIN_DISMISS_WARNING: {type(exc).__name__}: {exc}', flush=True)
+    # Some Facebook variants render a dialog-like overlay without role=dialog.
+    for label in ('Close', 'Dismiss'):
+        locator = page.get_by_role('button', name=label, exact=True)
+        try:
+            if locator.count() == 1 and locator.first.is_visible():
+                locator.first.click(timeout=2000)
+                page.wait_for_timeout(500)
+                return True
+        except Exception:
+            pass
+    return False
+
+
+def blocking_login_prompt(page):
+    """Report a visible login wall, without pretending it is a post."""
+    try:
+        dialogs = page.locator('[role="dialog"]')
+        for i in range(min(dialogs.count(), 5)):
+            dialog = dialogs.nth(i)
+            if not dialog.is_visible():
+                continue
+            text = dialog.inner_text(timeout=1500).lower()
+            if any(t in text for t in (
+                'log in', 'login', 'sign up', 'create new account',
+                'войти', 'увійти', 'зарегистрироваться',
+            )):
+                return True
+    except Exception:
+        pass
+    return False
+
+
 def main():
     config = json.loads(CONFIG_FILE.read_text(encoding='utf-8'))
     results = []
@@ -70,11 +123,15 @@ def main():
             try:
                 response = page.goto(url, wait_until='domcontentloaded', timeout=45000)
                 page.wait_for_timeout(3500)
+                dismissed = dismiss_initial_login_prompt(page)
+                print(f'INITIAL_LOGIN_DISMISSED: {dismissed}', flush=True)
                 unavailable_message = "This page isn't available right now"
                 if unavailable_message.lower() in page.locator('body').inner_text(timeout=10000).lower():
                     print(f'SOURCE_RETRY: {name}: Facebook temporarily unavailable; reloading once', flush=True)
                     response = page.reload(wait_until='domcontentloaded', timeout=45000)
                     page.wait_for_timeout(4000)
+                    dismissed_after_retry = dismiss_initial_login_prompt(page)
+                    print(f'RETRY_LOGIN_DISMISSED: {dismissed_after_retry}', flush=True)
                 body_now = page.locator('body').inner_text(timeout=10000)
                 if unavailable_message.lower() in body_now.lower():
                     print(f'SOURCE_UNAVAILABLE: {name}: Facebook returned an unavailable page despite HTTP 200', flush=True)
@@ -137,6 +194,9 @@ def main():
                         ):
                             extracted_by_key[primary] = post
                     print(f'SCROLL_{scroll + 1}: dom_articles={count} unique_posts={len(extracted_by_key)}', flush=True)
+                    if blocking_login_prompt(page):
+                        print(f'LOGIN_WALL_AFTER_SCROLL: {name}: stopping collection of visible posts', flush=True)
+                        break
                     if len(extracted_by_key) <= previous_count:
                         stable_rounds += 1
                     else:
