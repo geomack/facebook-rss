@@ -1,4 +1,4 @@
-name: Build Facebook RSS
+name: Build Facebook and Telegram RSS
 
 on:
   workflow_dispatch:
@@ -54,7 +54,8 @@ jobs:
         run: |
           test -s docs/feed.xml
           test -s docs/feed-test.xml
-          python -c "import xml.etree.ElementTree as E; r=E.parse('docs/feed.xml').getroot(); assert r.tag=='rss'; print('RSS XML valid, items:',len(r.findall('./channel/item')))"
+          test -s docs/telegram.xml
+          python -c "import xml.etree.ElementTree as E; files=['docs/feed.xml','docs/feed-test.xml','docs/telegram.xml']; [(lambda r: print(p, len(r.findall('./channel/item')), 'items', r.findtext('./channel/title')))(E.parse(p).getroot()) for p in files]"
 
       - name: Upload diagnostics
         if: always()
@@ -66,15 +67,16 @@ jobs:
             results/telegram_posts.json
             docs/feed.xml
             docs/feed-test.xml
+            docs/telegram.xml
           if-no-files-found: ignore
 
       - name: Commit feed and seen posts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/feed.xml docs/feed-test.xml state/posts.json
+          git add docs/feed.xml docs/feed-test.xml docs/telegram.xml state/posts.json
           if ! git diff --cached --quiet; then
-            git commit -m "Update Facebook RSS"
+            git commit -m "Update Facebook and Telegram RSS"
             git pull --rebase origin main
             git push origin HEAD:main
           else
