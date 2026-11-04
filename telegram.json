@@ -1,0 +1,10 @@
+{
+  "telegram": [
+    {
+      "name": "Приходько про Польщу",
+      "username": "prykhodkopolska",
+      "enabled": true
+    }
+  ],
+  "initial_posts_per_channel": 12
+}
