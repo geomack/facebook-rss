@@ -20,6 +20,7 @@ SOURCE = ROOT / "results" / "facebook_browser_test.json"
 STATE = ROOT / "state" / "posts.json"
 FEED = ROOT / "docs" / "feed.xml"
 FEED_TEST = ROOT / "docs" / "feed-test.xml"
+TELEGRAM_FEED = ROOT / "docs" / "telegram.xml"
 MAX_STORED = 2000
 MAX_FEED = 300
 CONTENT_NS = "http://purl.org/rss/1.0/modules/content/"
@@ -73,17 +74,21 @@ def load_existing():
     return {item["url"]: item for item in data if isinstance(item, dict) and item.get("url")}
 
 
-def build_feed(items, title="Facebook pages | personal RSS"):
+def build_feed(items, *, title, site_url, feed_url, description, icon_url):
     rss = ET.Element("rss", version="2.0")
     channel = ET.SubElement(rss, "channel")
     info = {
         "title": title,
-        "link": "https://www.facebook.com/",
-        "description": "Public Facebook page posts, collected when accessible",
-        "language": "en",
+        "link": site_url,
+        "description": description,
+        "language": "uk" if "Telegram" in title else "en",
     }
     for name, value in info.items():
         ET.SubElement(channel, name).text = value
+    image = ET.SubElement(channel, "image")
+    ET.SubElement(image, "url").text = icon_url
+    ET.SubElement(image, "title").text = title
+    ET.SubElement(image, "link").text = site_url
     ET.SubElement(channel, "lastBuildDate").text = format_datetime(datetime.now(timezone.utc))
     for item in sorted(items, key=lambda x: x["first_seen"], reverse=True)[:MAX_FEED]:
         node = ET.SubElement(channel, "item")
@@ -93,10 +98,9 @@ def build_feed(items, title="Facebook pages | personal RSS"):
         ET.SubElement(node, "pubDate").text = format_datetime(datetime.fromisoformat(item["first_seen"]))
         ET.SubElement(node, "description").text = item["text"]
         ET.SubElement(node, "{" + CONTENT_NS + "}encoded").text = (
-            "<p>" + escape(item["text"]).replace("\n", "<br/>") + "</p>"
+            "<p>" + escape(item["text"]).replace("\\n", "<br/>") + "</p>"
         )
     return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
-
 
 def process(observations):
     existing = load_existing()
@@ -164,11 +168,40 @@ def process(observations):
     STATE.parent.mkdir(parents=True, exist_ok=True)
     FEED.parent.mkdir(parents=True, exist_ok=True)
     STATE.write_text(json.dumps(kept, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    FEED.write_bytes(build_feed(kept))
-    FEED_TEST.write_bytes(build_feed(kept, title="Facebook pages | RSS delivery test"))
-    ET.parse(FEED)
-    ET.parse(FEED_TEST)
-    print(f"RSS_DONE: candidates={candidates} new={new} stored={len(kept)} source_errors={unavailable} feed={FEED}", flush=True)
+    facebook_items = [item for item in kept if not (
+        item.get("source_type") == "telegram" or
+        urlsplit(item.get("url", "")).hostname in ("t.me", "www.t.me", "telegram.me")
+    )]
+    telegram_items = [item for item in kept if item not in facebook_items]
+    facebook_settings = {
+        "site_url": "https://www.facebook.com/",
+        "description": "Public Facebook page posts, collected when accessible",
+        "icon_url": "https://geomack.github.io/facebook-rss/facebook-icon.svg",
+    }
+    telegram_settings = {
+        "site_url": "https://t.me/prykhodkopolska",
+        "description": "Public Telegram channel messages, collected when accessible",
+        "icon_url": "https://geomack.github.io/facebook-rss/telegram-icon.svg",
+    }
+    FEED.write_bytes(build_feed(
+        facebook_items, title="Facebook | personal RSS",
+        feed_url="https://geomack.github.io/facebook-rss/feed.xml",
+        **facebook_settings
+    ))
+    FEED_TEST.write_bytes(build_feed(
+        facebook_items, title="Facebook | RSS delivery test",
+        feed_url="https://geomack.github.io/facebook-rss/feed-test.xml",
+        **facebook_settings
+    ))
+    TELEGRAM_FEED.write_bytes(build_feed(
+        telegram_items, title="Telegram | personal RSS",
+        feed_url="https://geomack.github.io/facebook-rss/telegram.xml",
+        **telegram_settings
+    ))
+    for path in (FEED, FEED_TEST, TELEGRAM_FEED):
+        ET.parse(path)
+    print(f"RSS_DONE: facebook={len(facebook_items)} telegram={len(telegram_items)} "
+          f"new_facebook={new} new_telegram={telegram_new} source_errors={unavailable}", flush=True)
 
 
 def main():
