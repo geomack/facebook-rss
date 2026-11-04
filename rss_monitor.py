@@ -13,6 +13,7 @@ from urllib.parse import urlsplit, urlunsplit, parse_qs
 from xml.etree import ElementTree as ET
 
 import check_facebook
+import telegram_collector
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "results" / "facebook_browser_test.json"
@@ -100,6 +101,8 @@ def build_feed(items, title="Facebook pages | personal RSS"):
 def process(observations):
     existing = load_existing()
     for saved in existing.values():
+        if saved.get("source_type") == "telegram":
+            continue
         normalized = clean_text(saved.get("text", ""), saved.get("source", "Facebook"))
         if normalized:
             saved["text"] = normalized
@@ -135,6 +138,28 @@ def process(observations):
             elif content != existing[link].get("text"):
                 existing[link]["text"] = content
                 existing[link]["title"] = source + ": " + headline[:110]
+    telegram_candidates = 0
+    telegram_new = 0
+    tg_results = Path("results/telegram_posts.json")
+    if tg_results.exists():
+        for channel in json.loads(tg_results.read_text(encoding="utf-8")):
+            if channel.get("error"):
+                unavailable += 1
+                print("TELEGRAM_SOURCE_ERROR {}: {}".format(channel.get("name"),channel["error"]), flush=True)
+                continue
+            for item in channel.get("posts", []):
+                telegram_candidates += 1
+                url = item["url"]
+                if url not in existing:
+                    existing[url] = {
+                        **item,
+                        "first_seen": now,
+                    }
+                    telegram_new += 1
+                elif item["text"] != existing[url].get("text"):
+                    existing[url]["text"] = item["text"]
+                    existing[url]["title"] = item["title"]
+    print(f"TELEGRAM_RSS: candidates={telegram_candidates} new={telegram_new}", flush=True)
     kept = sorted(existing.values(), key=lambda x: x["first_seen"], reverse=True)[:MAX_STORED]
     STATE.parent.mkdir(parents=True, exist_ok=True)
     FEED.parent.mkdir(parents=True, exist_ok=True)
@@ -148,6 +173,7 @@ def process(observations):
 
 def main():
     check_facebook.main()
+    telegram_collector.main()
     if not SOURCE.exists():
         raise RuntimeError("Collector produced no results JSON")
     process(json.loads(SOURCE.read_text(encoding="utf-8")))
