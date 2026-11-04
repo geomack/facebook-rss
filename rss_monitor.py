@@ -99,6 +99,12 @@ def build_feed(items):
 
 def process(observations):
     existing = load_existing()
+    for saved in existing.values():
+        normalized = clean_text(saved.get("text", ""), saved.get("source", "Facebook"))
+        if normalized:
+            saved["text"] = normalized
+            heading = next((line for line in normalized.splitlines() if line.strip()), "New post")
+            saved["title"] = saved.get("source", "Facebook") + ": " + heading[:110]
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     new, candidates, unavailable = 0, 0, 0
     for page in observations:
