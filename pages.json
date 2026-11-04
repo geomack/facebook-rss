@@ -1,6 +1,15 @@
 {
   "pages": [
-    {"name": "NASA", "url": "https://www.facebook.com/NASA", "enabled": true}
+    {
+      "name": "NASA",
+      "url": "https://www.facebook.com/NASA",
+      "enabled": true
+    },
+    {
+      "name": "Peter Chernyshov",
+      "url": "https://www.facebook.com/peter.chernyshov",
+      "enabled": true
+    }
   ],
   "posts_per_page": 3
 }
