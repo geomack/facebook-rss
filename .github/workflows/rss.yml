@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: facebook-rss-feed
+  group: facebook-rss-feed-v2
   cancel-in-progress: true
 
 jobs:
