@@ -51,14 +51,17 @@ def canonical_post_url(links):
 
 def clean_text(raw, name):
     raw = str(raw or "").replace("\u00a0", " ").replace("\r", "")
-    raw = re.sub(r"\s*See less\s*$", "", raw, flags=re.I)
+    raw = re.sub(r"\s*See less(?=\s|$)", "", raw, flags=re.I)
     lines = [line.strip() for line in raw.splitlines() if line.strip() and line.strip() != "·"]
     if lines and (lines[0] == name or lines[0].startswith(name + " - ")):
+        lines.pop(0)
+    if lines and re.fullmatch(r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+\w+\s+\d{1,2},?\s+\d{4}\s+at\s+.+", lines[0], flags=re.I):
         lines.pop(0)
     relative = r"(?:\d+\s+(?:seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s+ago|\d+[smhdwy])"
     for _ in range(3):
         if lines and re.fullmatch(relative, lines[0], flags=re.I):
             lines.pop(0)
+    lines = [line for line in lines if not re.fullmatch(r"\d{1,2}:\d{2}\s*/\s*\d{1,2}:\d{2}", line)]
     return "\n".join(lines).strip()
 
 
@@ -113,8 +116,8 @@ def process(observations):
             content = clean_text(post.get("text"), source)
             if not content or content.lower() in ("like", "comment", "share"):
                 continue
+            headline = next((line for line in content.splitlines() if line.strip()), "New post")
             if link not in existing:
-                headline = next((line for line in content.splitlines() if line.strip()), "New post")
                 existing[link] = {
                     "url": link,
                     "source": source,
@@ -123,6 +126,9 @@ def process(observations):
                     "first_seen": now,
                 }
                 new += 1
+            elif content != existing[link].get("text"):
+                existing[link]["text"] = content
+                existing[link]["title"] = source + ": " + headline[:110]
     kept = sorted(existing.values(), key=lambda x: x["first_seen"], reverse=True)[:MAX_STORED]
     STATE.parent.mkdir(parents=True, exist_ok=True)
     FEED.parent.mkdir(parents=True, exist_ok=True)
