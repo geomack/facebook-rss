@@ -1,0 +1,47 @@
+name: Diagnose published RSS delivery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/test-feed-delivery.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch live GitHub Pages feed with several clients
+        run: |
+          python - <<'PY'
+          import re
+          import urllib.request
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          urls = {
+              'github_pages': 'https://geomack.github.io/facebook-rss/feed.xml',
+              'raw_github': 'https://raw.githubusercontent.com/geomack/facebook-rss/main/docs/feed.xml',
+          }
+          local = Path('docs/feed.xml').read_bytes()
+          print('LOCAL_ITEMS:', len(ET.fromstring(local).findall('./channel/item')))
+          for name,url in urls.items():
+              for agent in ('Mozilla/5.0 (RSS diagnostic)', 'Feedly/1.0'):
+                  try:
+                      req = urllib.request.Request(url, headers={
+                          'User-Agent': agent,
+                          'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+                      })
+                      with urllib.request.urlopen(req, timeout=15) as response:
+                          body = response.read()
+                          items = ET.fromstring(body).findall('./channel/item')
+                          print('REMOTE:', name, agent, 'HTTP', response.status,
+                                'ITEMS', len(items), 'BYTES', len(body),
+                                'CONTENT_TYPE', response.headers.get('Content-Type'),
+                                'CACHE_CONTROL', response.headers.get('Cache-Control'),
+                                'AGE', response.headers.get('Age'),
+                                'ETAG', response.headers.get('ETag'),
+                                'LAST_MODIFIED', response.headers.get('Last-Modified'))
+                  except Exception as e:
+                      print('REMOTE_ERROR:', name, agent, type(e).__name__, str(e)[:200])
+          PY
