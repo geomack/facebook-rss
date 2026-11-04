@@ -69,57 +69,77 @@ def main():
             page = context.new_page()
             try:
                 response = page.goto(url, wait_until='domcontentloaded', timeout=45000)
-                page.wait_for_timeout(4000)
-                # Load more publicly visible posts. Facebook can lazy-load content
-                # after scrolling, so checking the first screen alone is insufficient.
-                for scroll in range(5):
-                    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                    page.wait_for_timeout(1600)
-                    print(f'SCROLL_{scroll + 1}: articles={page.locator(\'[role="article"]\').count()}', flush=True)
-                page.evaluate("window.scrollTo(0, 0)")
-                page.wait_for_timeout(500)
-                page_title = page.title()
-                body_preview = page.locator("body").inner_text(timeout=12000)[:850]
-                print(f'PAGE_TITLE: {page_title}', flush=True)
-                print(f'PAGE_BODY_PREVIEW: {body_preview!r}', flush=True)
-                # A nested comment can be role=article; keep only top-level containers.
-                articles = page.locator('[role="article"]')
-                article_count = articles.count()
-                extracted = []
-                for i in range(min(article_count, 80)):
-                    article = articles.nth(i)
-                    if article.evaluate("el => Boolean(el.parentElement?.closest('[role=article]'))"):
-                        continue
-                    expanded = False
-                    try:
-                        expanded = expand_post(article)
-                        if expanded:
-                            page.wait_for_timeout(700)
-                    except Exception as exc:
-                        print(f'EXPAND_WARNING: {type(exc).__name__}: {exc}', flush=True)
-                    try:
-                        data = article_data(article, page.url)
-                    except Exception as exc:
-                        print(f'EXTRACT_WARNING: {type(exc).__name__}: {exc}', flush=True)
-                        continue
-                    text = data['text']
-                    if not text:
-                        continue
-                    still_truncated = 'see more' in text.lower()
-                    post = {
-                        'text': text,
-                        'length': len(text),
-                        'expanded': expanded,
-                        'still_truncated': still_truncated,
-                        'post_links': data['links'],
-                        'nested_comments': data['nested_comments'],
-                    }
-                    extracted.append(post)
-                    print(f'POST_CANDIDATE_{len(extracted)}: chars={len(text)}, expanded={expanded}, truncated={still_truncated}, links={len(data["links"])}', flush=True)
-                    print(f'TEXT_PREVIEW: {text[:350]!r}', flush=True)
+                page.wait_for_timeout(3500)
+                extracted_by_key = {}
+                article_count = 0
+                stable_rounds = 0
+                previous_count = 0
+
+                # Collect on EVERY scroll, not just at the end. Facebook may
+                # virtualize earlier posts and remove them from the live DOM.
+                for scroll in range(12):
+                    articles = page.locator('[role="article"]')
+                    count = min(articles.count(), 100)
+                    article_count = max(article_count, count)
+                    for i in range(count):
+                        article = articles.nth(i)
+                        try:
+                            if article.evaluate("el => Boolean(el.parentElement?.closest('[role=article]'))"):
+                                continue
+                            expanded = expand_post(article)
+                            if expanded:
+                                page.wait_for_timeout(250)
+                            data = article_data(article, page.url)
+                        except Exception as exc:
+                            print(f'ARTICLE_WARNING: {type(exc).__name__}: {exc}', flush=True)
+                            continue
+                        text = data.get('text', '').strip()
+                        links = data.get('links', [])
+                        if not text or not links:
+                            continue
+                        # A Facebook permalink, not a nested comment, must be present.
+                        primary = next((link.split('?')[0] for link in links if
+                                        '/posts/' in link or '/reel/' in link or
+                                        '/videos/' in link or '/permalink/' in link), None)
+                        if not primary:
+                            primary = next((link.split('?')[0] for link in links), None)
+                        if not primary:
+                            continue
+                        still_truncated = 'see more' in text.lower()
+                        post = {
+                            'text': text,
+                            'length': len(text),
+                            'expanded': expanded,
+                            'still_truncated': still_truncated,
+                            'post_links': links,
+                            'nested_comments': data.get('nested_comments', 0),
+                        }
+                        old = extracted_by_key.get(primary)
+                        if old is None or (old['still_truncated'] and not still_truncated) or (
+                            old['still_truncated'] == still_truncated and len(text) > old['length']
+                        ):
+                            extracted_by_key[primary] = post
+                    print(f'SCROLL_{scroll + 1}: dom_articles={count} unique_posts={len(extracted_by_key)}', flush=True)
+                    if len(extracted_by_key) <= previous_count:
+                        stable_rounds += 1
+                    else:
+                        stable_rounds = 0
+                    previous_count = len(extracted_by_key)
+                    if stable_rounds >= 4 and scroll >= 5:
+                        break
+                    page.mouse.wheel(0, 1450)
+                    page.wait_for_timeout(1500)
+
+                extracted = list(extracted_by_key.values())
+                print(f'PAGE_TITLE: {page.title()}', flush=True)
+                print(f'PAGE_BODY_PREVIEW: {page.locator("body").inner_text(timeout=10000)[:600]!r}', flush=True)
+                for idx, post in enumerate(extracted, 1):
+                    print(f'POST_CANDIDATE_{idx}: chars={post["length"]} expanded={post["expanded"]} truncated={post["still_truncated"]} links={len(post["post_links"])}', flush=True)
+                    print(f'TEXT_PREVIEW: {post["text"][:240]!r}', flush=True)
                 print(f'HTTP_STATUS: {response.status if response else "unknown"}', flush=True)
                 print(f'ARTICLES_FOUND: {article_count}', flush=True)
                 print(f'TOP_LEVEL_CANDIDATES: {len(extracted)}', flush=True)
+                print(f'SOURCE_SUMMARY: {name}: candidates={len(extracted)}', flush=True)
                 print(f'SOURCE_SUMMARY: {name}: articles={article_count} candidates={len(extracted)}', flush=True)
                 results.append({
                     'name': name,
