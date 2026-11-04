@@ -2,6 +2,13 @@ name: Build Facebook RSS
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'pages.json'
+      - 'check_facebook.py'
+      - 'rss_monitor.py'
+      - '.github/workflows/rss.yml'
   schedule:
     - cron: '17 */2 * * *'
 
