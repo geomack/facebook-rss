@@ -70,6 +70,23 @@ def main():
             try:
                 response = page.goto(url, wait_until='domcontentloaded', timeout=45000)
                 page.wait_for_timeout(3500)
+                unavailable_message = "This page isn't available right now"
+                if unavailable_message.lower() in page.locator('body').inner_text(timeout=10000).lower():
+                    print(f'SOURCE_RETRY: {name}: Facebook temporarily unavailable; reloading once', flush=True)
+                    response = page.reload(wait_until='domcontentloaded', timeout=45000)
+                    page.wait_for_timeout(4000)
+                body_now = page.locator('body').inner_text(timeout=10000)
+                if unavailable_message.lower() in body_now.lower():
+                    print(f'SOURCE_UNAVAILABLE: {name}: Facebook returned an unavailable page despite HTTP 200', flush=True)
+                    results.append({
+                        'name': name,
+                        'url': url,
+                        'status': response.status if response else None,
+                        'error': 'FACEBOOK_PAGE_UNAVAILABLE',
+                        'articles_found': 0,
+                        'posts': [],
+                    })
+                    continue
                 extracted_by_key = {}
                 article_count = 0
                 stable_rounds = 0
