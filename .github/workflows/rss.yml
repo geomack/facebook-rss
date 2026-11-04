@@ -48,6 +48,7 @@ jobs:
       - name: Validate RSS
         run: |
           test -s docs/feed.xml
+          test -s docs/feed-test.xml
           python -c "import xml.etree.ElementTree as E; r=E.parse('docs/feed.xml').getroot(); assert r.tag=='rss'; print('RSS XML valid, items:',len(r.findall('./channel/item')))"
 
       - name: Upload diagnostics
@@ -58,13 +59,14 @@ jobs:
           path: |
             results/facebook_browser_test.json
             docs/feed.xml
+            docs/feed-test.xml
           if-no-files-found: ignore
 
       - name: Commit feed and seen posts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/feed.xml state/posts.json
+          git add docs/feed.xml docs/feed-test.xml state/posts.json
           if ! git diff --cached --quiet; then
             git commit -m "Update Facebook RSS"
             git pull --rebase origin main
