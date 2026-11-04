@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "results" / "facebook_browser_test.json"
 STATE = ROOT / "state" / "posts.json"
 FEED = ROOT / "docs" / "feed.xml"
+FEED_TEST = ROOT / "docs" / "feed-test.xml"
 MAX_STORED = 2000
 MAX_FEED = 300
 CONTENT_NS = "http://purl.org/rss/1.0/modules/content/"
@@ -71,11 +72,11 @@ def load_existing():
     return {item["url"]: item for item in data if isinstance(item, dict) and item.get("url")}
 
 
-def build_feed(items):
+def build_feed(items, title="Facebook pages | personal RSS"):
     rss = ET.Element("rss", version="2.0")
     channel = ET.SubElement(rss, "channel")
     info = {
-        "title": "Facebook pages | personal RSS",
+        "title": title,
         "link": "https://www.facebook.com/",
         "description": "Public Facebook page posts, collected when accessible",
         "language": "en",
@@ -139,7 +140,9 @@ def process(observations):
     FEED.parent.mkdir(parents=True, exist_ok=True)
     STATE.write_text(json.dumps(kept, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     FEED.write_bytes(build_feed(kept))
+    FEED_TEST.write_bytes(build_feed(kept, title="Facebook pages | RSS delivery test"))
     ET.parse(FEED)
+    ET.parse(FEED_TEST)
     print(f"RSS_DONE: candidates={candidates} new={new} stored={len(kept)} source_errors={unavailable} feed={FEED}", flush=True)
 
 
