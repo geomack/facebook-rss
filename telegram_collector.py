@@ -70,15 +70,16 @@ def main():
     for channel in config.get("telegram", []):
         if not channel.get("enabled", True):
             continue
+        username = channel["username"].strip().lstrip("@").casefold()
         try:
             posts, metrics = collect_channel(channel, limit)
             print("TELEGRAM_SOURCE " + json.dumps({"name":channel["name"], **metrics, "selected":len(posts)}, ensure_ascii=False), flush=True)
             for post in posts[-3:]:
                 print("TELEGRAM_SAMPLE " + post["url"] + " chars=" + str(len(post["text"])) + " title=" + post["title"][:140],flush=True)
-            output.append({"name":channel["name"],"posts":posts,"metrics":metrics})
+            output.append({"name":channel["name"],"username":username,"posts":posts,"metrics":metrics})
         except Exception as exc:
             print("TELEGRAM_ERROR {}: {}: {}".format(channel["name"], type(exc).__name__,exc),flush=True)
-            output.append({"name":channel["name"],"posts":[],"error":str(exc)})
+            output.append({"name":channel["name"],"username":username,"posts":[],"error":str(exc)})
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     RESULTS.write_text(json.dumps(output,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 

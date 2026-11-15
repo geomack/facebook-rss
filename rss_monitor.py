@@ -4,6 +4,8 @@ Reads the current diagnostic collector, preserves prior posts, and only publishe
 permalink-backed posts whose text was expanded. No credentials or paid APIs.
 """
 import json
+import os
+from collections import Counter
 import re
 from datetime import datetime, timezone
 from email.utils import format_datetime
@@ -172,19 +174,26 @@ def process(observations):
         if not saved.get("message_only"):
             saved["text"] = clean_text(saved.get("text", ""), saved.get("source", "Facebook"))
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    new, candidates, unavailable = 0, 0, 0
+    new, unavailable = 0, 0
+    new_by_source, updated_by_source = Counter(), Counter()
+    results = {"facebook": {}, "telegram": {}}
     for page in observations:
+        source = page.get("name", "Facebook")
+        results["facebook"][source] = {
+            "found": page.get("articles_found", 0),
+            "selected": len(page.get("posts", [])),
+            "error": page.get("error"),
+            "access_attempts": page.get("access_attempts", []),
+        }
         if page.get("error"):
             print("SOURCE_ERROR: {}: {}".format(page.get("name"), page["error"]), flush=True)
             unavailable += 1
         for post in page.get("posts", []):
-            candidates += 1
             if post.get("still_truncated"):
                 continue
             link = canonical_post_url(post.get("post_links", []))
             if not link:
                 continue
-            source = page.get("name", "Facebook")
             message_only = bool(post.get("message_only"))
             content = clean_text(post.get("text"), source, article_text=not message_only)
             if not content or (not message_only and content.lower() in ("like", "comment", "share")):
@@ -198,13 +207,23 @@ def process(observations):
                     "message_only": message_only,
                 }
                 new += 1
+                new_by_source["facebook", source] += 1
             elif message_only or not existing[link].get("message_only"):
+                if content != existing[link].get("text"):
+                    updated_by_source["facebook", source] += 1
                 existing[link].update(source=source, text=content, message_only=message_only)
     telegram_candidates = 0
     telegram_new = 0
     tg_results = ROOT / "results" / "telegram_posts.json"
     if tg_results.exists():
         for channel in json.loads(tg_results.read_text(encoding="utf-8")):
+            name = channel["name"]
+            source_id = channel.get("username", name)
+            results["telegram"][source_id] = {
+                "found": channel.get("metrics", {}).get("messages_in_html", 0),
+                "selected": len(channel.get("posts", [])),
+                "error": "TELEGRAM_FETCH_FAILED" if channel.get("error") else None,
+            }
             if channel.get("error"):
                 unavailable += 1
                 print("TELEGRAM_SOURCE_ERROR {}: {}".format(channel.get("name"),channel["error"]), flush=True)
@@ -218,7 +237,9 @@ def process(observations):
                         "first_seen": now,
                     }
                     telegram_new += 1
+                    new_by_source["telegram", source_id] += 1
                 elif item["text"] != existing[url].get("text"):
+                    updated_by_source["telegram", source_id] += 1
                     existing[url]["text"] = item["text"]
                     existing[url]["title"] = item["title"]
     print(f"TELEGRAM_RSS: candidates={telegram_candidates} new={telegram_new}", flush=True)
@@ -265,6 +286,36 @@ def process(observations):
     ))
     for path in (FEED, FEED_TEST, TELEGRAM_FEED):
         ET.parse(path)
+    sources = []
+    for kind, file_name, collection, published in (
+        ("facebook", "pages.json", "pages", facebook_items),
+        ("telegram", "telegram.json", "telegram", telegram_items),
+    ):
+        config = json.loads((ROOT / file_name).read_text(encoding="utf-8"))
+        for entry in config[collection]:
+            source = entry["url"] if kind == "facebook" else entry["username"].strip().lstrip("@")
+            key = entry["name"] if kind == "facebook" else source.casefold()
+            live_count = sum(
+                (item["source"] == key if kind == "facebook"
+                 else urlsplit(item["url"]).path.split("/")[1].casefold() == key)
+                for item in published[:MAX_FEED]
+            )
+            row = results[kind].get(key, {})
+            error = row.get("error")
+            sources.append({
+                "feed": kind, "name": entry["name"], "source": source,
+                "enabled": entry.get("enabled", True), "checked": key in results[kind],
+                "found": row.get("found", 0), "selected": row.get("selected", 0),
+                "access_attempts": row.get("access_attempts", []),
+                "new": new_by_source[kind, key], "updated": updated_by_source[kind, key],
+                "in_feed": live_count,
+                "error": (error if error in {"FACEBOOK_LOGIN_REQUIRED", "FACEBOOK_PAGE_UNAVAILABLE", "TELEGRAM_FETCH_FAILED"}
+                          else "SOURCE_FETCH_FAILED" if error else None),
+            })
+    report = {"built_at": now, "run_id": os.getenv("GITHUB_RUN_ID"), "sources": sources}
+    (ROOT / "docs" / "sources.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"RSS_DONE: facebook={len(facebook_items)} telegram={len(telegram_items)} "
           f"new_facebook={new} new_telegram={telegram_new} source_errors={unavailable}", flush=True)
 

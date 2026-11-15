@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'none'">
+<title>Источники RSS</title>
+<style>
+:root{color-scheme:light dark;font:16px/1.5 system-ui;color:#162630;background:#f1f5f5;--panel:white;--line:#d6e0e0;--muted:#4e626b;--accent:#03665c}
+body{margin:0} main{max-width:72rem;margin:auto;padding:clamp(1rem,4vw,3rem)} h1,h2{line-height:1.15;margin:0 0 0.75rem} h1{font-size:clamp(2rem,5vw,3rem);letter-spacing:-.045em} h2{font-size:1.25rem}
+section,details{background:var(--panel);border:1px solid var(--line);border-radius:.85rem;padding:1.15rem;margin:1rem 0} p{margin:.65rem 0}.muted,small{color:var(--muted)} nav{display:flex;gap:1rem;flex-wrap:wrap} a{color:var(--accent)}
+form,.controls{display:flex;align-items:end;gap:.75rem;flex-wrap:wrap} label{display:grid;gap:.25rem} label.wide{flex:1;min-width:min(100%,15rem)} input,select,button{font:inherit;padding:.5rem .65rem;border:1px solid var(--line);border-radius:.45rem;background:var(--panel);color:inherit}
+button{cursor:pointer} button.primary{background:#03665c;color:white;border-color:#03665c} button:disabled{opacity:.55;cursor:default}
+table{border-collapse:collapse;width:100%;font-size:.91rem} th,td{padding:.55rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{white-space:nowrap} .scroll{overflow:auto} td:first-child{min-width:12rem}
+.status-error{color:#a23022}.status-ok{color:var(--accent)} #progress:empty{display:none} summary{cursor:pointer}
+@media(prefers-color-scheme:dark){:root{color:#e5ecee;background:#121c23;--panel:#1b2932;--line:#344955;--muted:#a6b7bf;--accent:#82ddd0}.status-error{color:#ffaaa0}}
+</style>
+<script src="manage.js" defer></script>
+</head>
+<body><main>
+<h1>Источники RSS</h1>
+<nav><a href="feed.xml">Facebook RSS</a><a href="telegram.xml">Telegram RSS</a></nav>
+<section aria-labelledby="add-title">
+<h2 id="add-title">Добавить источник</h2>
+<form id="add">
+<label>Лента<select name="feed" id="feed"><option value="telegram">Telegram</option><option value="facebook">Facebook</option></select></label>
+<label class="wide">Адрес<input name="source" id="source" required placeholder="@username или ссылка t.me" autocomplete="off"></label>
+<label class="wide">Название <small>по желанию</small><input name="name" maxlength="120"></label>
+<button class="primary">Добавить и проверить</button>
+</form>
+</section>
+<details id="access"><summary>Подключить управление</summary>
+<p>Для добавления, отключения и запуска сборки нужен токен GitHub с доступом только к <code>geomack/facebook-rss</code> и правом <strong>Actions → Read and write</strong>. Страница держит токен в памяти вкладки и отправляет его только в API GitHub.</p>
+<p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Создать fine-grained token в GitHub</a></p>
+<label class="wide">Токен GitHub<input id="token" type="password" autocomplete="off" spellcheck="false"></label>
+</details>
+<section aria-labelledby="source-title">
+<div class="controls"><h2 id="source-title">Источники и результаты</h2><button id="refresh">Обновить ленты</button></div>
+<p id="progress" role="status"></p>
+<p id="last" class="muted" role="status">Загружаю отчёт…</p>
+<div class="scroll"><table><thead><tr><th scope="col">Источник</th><th scope="col">Статус</th><th scope="col">Найдено</th><th scope="col">Новых</th><th scope="col">Изменено</th><th scope="col">В RSS</th><th scope="col">Действие</th></tr></thead><tbody id="sources"></tbody></table></div>
+</section>
+</main></body></html>

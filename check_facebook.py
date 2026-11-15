@@ -108,6 +108,18 @@ def blocking_login_prompt(page):
     return False
 
 
+def page_access(page, body):
+    if "this page isn't available right now" in body.casefold():
+        return "unavailable"
+    if page.locator('[role="article"]').count():
+        return "articles_visible"
+    if (
+        "log into facebook" in body.casefold()
+        and (page.locator('input[type="password"]').count() or "forgot password?" in body.casefold())
+    ):
+        return "login_required"
+    return "no_articles"
+    
 def main():
     config = json.loads(CONFIG_FILE.read_text(encoding='utf-8'))
     results = []
@@ -144,6 +156,22 @@ def main():
                         'error': 'FACEBOOK_PAGE_UNAVAILABLE',
                         'articles_found': 0,
                         'posts': [],
+                    })
+                    continue
+                access_attempts = [page_access(page, body_now)]
+                if access_attempts[0] == "login_required":
+                    response = page.reload(wait_until='domcontentloaded', timeout=45000)
+                    page.wait_for_timeout(3500)
+                    dismiss_initial_login_prompt(page)
+                    body_now = page.locator('body').inner_text(timeout=10000)
+                    access_attempts.append(page_access(page, body_now))
+                print(f'FACEBOOK_ACCESS: {name}: {access_attempts}', flush=True)
+                if access_attempts[-1] in ("login_required", "unavailable"):
+                    results.append({
+                        'name': name, 'url': url,
+                        'error': ('FACEBOOK_LOGIN_REQUIRED' if access_attempts[-1] == "login_required"
+                                  else 'FACEBOOK_PAGE_UNAVAILABLE'),
+                        'access_attempts': access_attempts, 'articles_found': 0, 'posts': [],
                     })
                     continue
                 extracted_by_key = {}
@@ -212,7 +240,6 @@ def main():
 
                 extracted = list(extracted_by_key.values())
                 print(f'PAGE_TITLE: {page.title()}', flush=True)
-                print(f'PAGE_BODY_PREVIEW: {page.locator("body").inner_text(timeout=10000)[:600]!r}', flush=True)
                 for idx, post in enumerate(extracted, 1):
                     print(f'POST_CANDIDATE_{idx}: chars={post["length"]} expanded={post["expanded"]} truncated={post["still_truncated"]} links={len(post["post_links"])}', flush=True)
                     print(f'TEXT_PREVIEW: {post["text"][:240]!r}', flush=True)
@@ -227,6 +254,7 @@ def main():
                     'status': response.status if response else None,
                     'final_url': page.url,
                     'articles_found': article_count,
+                    'access_attempts': access_attempts,
                     'posts': extracted,
                 })
             except Exception as exc:
