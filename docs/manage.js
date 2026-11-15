@@ -39,6 +39,19 @@ function render() {
     const address = document.createElement('small');
     address.textContent = (row.feed === 'facebook' ? 'Facebook · ' : 'Telegram · @') + row.source;
     label.append(title, document.createElement('br'), address);
+    if (row.latest) {
+      const url = new URL(row.latest.url);
+      if (url.protocol === 'https:' && ['t.me', 'www.facebook.com'].includes(url.hostname)) {
+        const latest = document.createElement('a');
+        latest.href = url.href;
+        latest.textContent = row.latest.title;
+        latest.target = '_blank';
+        latest.rel = 'noopener noreferrer';
+        const date = document.createElement('small');
+        date.textContent = new Date(row.latest.date).toLocaleString('ru-RU');
+        label.append(document.createElement('br'), latest, document.createElement('br'), date);
+      }
+    }
     const state = tr.insertCell();
     state.textContent = sourceStatus(row);
     state.className = row.error ? 'status-error' : row.checked ? 'status-ok' : '';

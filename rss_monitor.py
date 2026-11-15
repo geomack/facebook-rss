@@ -112,10 +112,18 @@ def post_html(item):
     text = item["text"]
     telegram = item.get("source_type") == "telegram"
     paragraphs = re.split(r"\n[ \t]*\n", text) if telegram else text.splitlines()
-    return "".join(
+    html = "".join(
         "<p>" + escape(paragraph.strip()).replace("\n", "<br/>") + "</p>"
         for paragraph in paragraphs if paragraph.strip()
     )
+
+    if telegram and item.get("media"):
+        html += '<p><a href="' + escape(item["url"], quote=True) + '">Открыть медиа в Telegram</a></p>'
+    return html
+
+
+def feed_date(item):
+    return item.get("published_at") or item["first_seen"]
 
 
 def enabled_sources():
@@ -154,13 +162,13 @@ def build_feed(items, *, title, site_url, feed_url, description, icon_url):
     ET.SubElement(image, "title").text = title
     ET.SubElement(image, "link").text = site_url
     ET.SubElement(channel, "lastBuildDate").text = format_datetime(datetime.now(timezone.utc))
-    for item in sorted(items, key=lambda x: x["first_seen"], reverse=True)[:MAX_FEED]:
+    for item in sorted(items, key=feed_date, reverse=True)[:MAX_FEED]:
         node = ET.SubElement(channel, "item")
         ET.SubElement(node, "title").text = post_title(item)
         ET.SubElement(node, "{" + DC_NS + "}creator").text = item["source"]
         ET.SubElement(node, "link").text = item["url"]
         ET.SubElement(node, "guid", isPermaLink="true").text = item["url"]
-        ET.SubElement(node, "pubDate").text = format_datetime(datetime.fromisoformat(item["first_seen"]))
+        ET.SubElement(node, "pubDate").text = format_datetime(datetime.fromisoformat(feed_date(item)))
         html = post_html(item)
         ET.SubElement(node, "description").text = html
         ET.SubElement(node, "{" + CONTENT_NS + "}encoded").text = html
@@ -238,10 +246,10 @@ def process(observations):
                     }
                     telegram_new += 1
                     new_by_source["telegram", source_id] += 1
-                elif item["text"] != existing[url].get("text"):
-                    updated_by_source["telegram", source_id] += 1
-                    existing[url]["text"] = item["text"]
-                    existing[url]["title"] = item["title"]
+                else:
+                    if any(item.get(field) != existing[url].get(field) for field in ("text", "media")):
+                        updated_by_source["telegram", source_id] += 1
+                    existing[url].update(item)
     print(f"TELEGRAM_RSS: candidates={telegram_candidates} new={telegram_new}", flush=True)
     kept = sorted(existing.values(), key=lambda x: x["first_seen"], reverse=True)[:MAX_STORED]
     STATE.parent.mkdir(parents=True, exist_ok=True)
@@ -295,11 +303,12 @@ def process(observations):
         for entry in config[collection]:
             source = entry["url"] if kind == "facebook" else entry["username"].strip().lstrip("@")
             key = entry["name"] if kind == "facebook" else source.casefold()
-            live_count = sum(
-                (item["source"] == key if kind == "facebook"
-                 else urlsplit(item["url"]).path.split("/")[1].casefold() == key)
-                for item in published[:MAX_FEED]
-            )
+            matching = [
+                item for item in sorted(published, key=feed_date, reverse=True)[:MAX_FEED]
+                if (item["source"] == key if kind == "facebook"
+                    else urlsplit(item["url"]).path.split("/")[1].casefold() == key)
+            ]
+            latest = matching[0] if matching else None
             row = results[kind].get(key, {})
             error = row.get("error")
             sources.append({
@@ -308,7 +317,9 @@ def process(observations):
                 "found": row.get("found", 0), "selected": row.get("selected", 0),
                 "access_attempts": row.get("access_attempts", []),
                 "new": new_by_source[kind, key], "updated": updated_by_source[kind, key],
-                "in_feed": live_count,
+                "in_feed": len(matching),
+                "latest": {"url": latest["url"], "date": feed_date(latest),
+                           "title": post_title(latest)} if latest else None,
                 "error": (error if error in {"FACEBOOK_LOGIN_REQUIRED", "FACEBOOK_PAGE_UNAVAILABLE", "TELEGRAM_FETCH_FAILED"}
                           else "SOURCE_FETCH_FAILED" if error else None),
             })

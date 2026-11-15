@@ -37,13 +37,23 @@ def collect_channel(channel, initial_limit):
         if not re.fullmatch(re.escape(username) + r"/\d+", post_id, flags=re.I):
             continue
         content_node = node.select_one(".tgme_widget_message_text") or node.select_one(".tgme_widget_message_caption")
-        if content_node is None:
+        content = ""
+        if content_node is not None:
+            for line_break in content_node.find_all("br"):
+                line_break.replace_with("\n")
+            content = content_node.get_text().strip()
+        media_kinds = (
+            (".tgme_widget_message_photo_wrap", "Фото"),
+            (".tgme_widget_message_video_wrap, .tgme_widget_message_roundvideo_wrap, video", "Видео"),
+            (".tgme_widget_message_sticker_wrap, .tgme_widget_message_sticker", "Стикер"),
+            (".tgme_widget_message_voice_player, .tgme_widget_message_audio, audio", "Аудио"),
+            (".tgme_widget_message_document_wrap, .tgme_widget_message_document", "Файл"),
+            (".tgme_widget_message_poll", "Опрос"),
+        )
+        media = next((label for selector, label in media_kinds if node.select_one(selector)), None)
+        if not content and not media:
             continue
-        for line_break in content_node.find_all("br"):
-            line_break.replace_with("\n")
-        content = content_node.get_text().strip()
-        if not content:
-            continue
+        content = content or media
         date_node = node.select_one("time[datetime]")
         published = date_node.get("datetime") if date_node else None
         if published:
@@ -59,9 +69,12 @@ def collect_channel(channel, initial_limit):
             "title": channel["name"] + ": " + content.split("\n", 1)[0][:110],
             "text": content,
             "published_at": published,
+            "media": media,
         }
     entries = sorted(items.values(), key=lambda x: int(x["url"].rsplit("/", 1)[-1]))
-    return entries[-initial_limit:], {"url":url,"html_bytes":len(html),"messages_in_html":len(nodes),"text_posts":len(items)}
+    if not nodes and not soup.select_one(".tgme_channel_info"):
+        raise RuntimeError("No public Telegram channel preview")
+    return entries[-initial_limit:], {"url":url,"html_bytes":len(html),"messages_in_html":len(nodes),"readable_posts":len(items)}
 
 def main():
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
