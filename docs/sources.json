@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-15T19:18:53+00:00",
-  "run_id": "43751628465",
+  "built_at": "2026-11-15T19:22:42+00:00",
+  "run_id": "43751993455",
   "sources": [
     {
       "feed": "facebook",
@@ -14,6 +14,7 @@
       "new": 0,
       "updated": 0,
       "in_feed": 0,
+      "latest": null,
       "error": null
     },
     {
@@ -30,6 +31,11 @@
       "new": 0,
       "updated": 0,
       "in_feed": 20,
+      "latest": {
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0DQUS2m6Wom1P2ugDHmjDG1txRJNbWR8ckRFQhr1y8RZQh6shCaharaJMbpgg1ETel",
+        "date": "2026-11-15T18:36:22+00:00",
+        "title": "Нічний марш диванних військ (з підтримкою ШІ)"
+      },
       "error": null
     },
     {
@@ -47,6 +53,7 @@
       "new": 0,
       "updated": 0,
       "in_feed": 0,
+      "latest": null,
       "error": "FACEBOOK_LOGIN_REQUIRED"
     },
     {
@@ -59,8 +66,13 @@
       "selected": 12,
       "access_attempts": [],
       "new": 0,
-      "updated": 0,
+      "updated": 1,
       "in_feed": 44,
+      "latest": {
+        "url": "https://t.me/prykhodkopolska/576",
+        "date": "2026-11-13T18:43:29+00:00",
+        "title": "Польща увійде до складу європейської переговорної групи."
+      },
       "error": null
     },
     {
@@ -72,9 +84,14 @@
       "found": 19,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
-      "updated": 0,
-      "in_feed": 12,
+      "new": 2,
+      "updated": 10,
+      "in_feed": 14,
+      "latest": {
+        "url": "https://t.me/murex77/12403",
+        "date": "2026-11-15T04:06:37+00:00",
+        "title": "#талия"
+      },
       "error": null
     }
   ]
