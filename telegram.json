@@ -4,6 +4,11 @@
       "name": "Приходько про Польщу",
       "username": "prykhodkopolska",
       "enabled": true
+    },
+    {
+      "name": "Mems",
+      "username": "murex77",
+      "enabled": true
     }
   ],
   "initial_posts_per_channel": 12

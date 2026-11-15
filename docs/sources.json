@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-15T19:00:28+00:00",
-  "run_id": "43749841981",
+  "built_at": "2026-11-15T19:17:29+00:00",
+  "run_id": "43751505376",
   "sources": [
     {
       "feed": "facebook",
@@ -61,6 +61,20 @@
       "new": 0,
       "updated": 0,
       "in_feed": 44,
+      "error": null
+    },
+    {
+      "feed": "telegram",
+      "name": "Mems",
+      "source": "murex77",
+      "enabled": true,
+      "checked": true,
+      "found": 19,
+      "selected": 12,
+      "access_attempts": [],
+      "new": 12,
+      "updated": 0,
+      "in_feed": 12,
       "error": null
     }
   ]
