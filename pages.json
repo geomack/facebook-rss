@@ -9,6 +9,11 @@
       "name": "Peter Chernyshov",
       "url": "https://www.facebook.com/peter.chernyshov",
       "enabled": true
+    },
+    {
+      "name": "Денис Караваев",
+      "url": "https://www.facebook.com/reteller",
+      "enabled": true
     }
   ],
   "posts_per_page": 3
