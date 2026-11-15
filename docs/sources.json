@@ -1,0 +1,67 @@
+{
+  "built_at": "2026-11-15T19:00:28+00:00",
+  "run_id": "43749841981",
+  "sources": [
+    {
+      "feed": "facebook",
+      "name": "NASA",
+      "source": "https://www.facebook.com/NASA",
+      "enabled": false,
+      "checked": false,
+      "found": 0,
+      "selected": 0,
+      "access_attempts": [],
+      "new": 0,
+      "updated": 0,
+      "in_feed": 0,
+      "error": null
+    },
+    {
+      "feed": "facebook",
+      "name": "Peter Chernyshov",
+      "source": "https://www.facebook.com/peter.chernyshov",
+      "enabled": true,
+      "checked": true,
+      "found": 3,
+      "selected": 1,
+      "access_attempts": [
+        "articles_visible"
+      ],
+      "new": 0,
+      "updated": 0,
+      "in_feed": 20,
+      "error": null
+    },
+    {
+      "feed": "facebook",
+      "name": "Денис Караваев",
+      "source": "https://www.facebook.com/reteller",
+      "enabled": true,
+      "checked": true,
+      "found": 0,
+      "selected": 0,
+      "access_attempts": [
+        "login_required",
+        "login_required"
+      ],
+      "new": 0,
+      "updated": 0,
+      "in_feed": 0,
+      "error": "FACEBOOK_LOGIN_REQUIRED"
+    },
+    {
+      "feed": "telegram",
+      "name": "Приходько про Польщу",
+      "source": "prykhodkopolska",
+      "enabled": true,
+      "checked": true,
+      "found": 20,
+      "selected": 12,
+      "access_attempts": [],
+      "new": 0,
+      "updated": 0,
+      "in_feed": 44,
+      "error": null
+    }
+  ]
+}
