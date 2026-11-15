@@ -2,6 +2,23 @@ name: Build Facebook and Telegram RSS
 
 on:
   workflow_dispatch:
+    inputs:
+      action:
+        description: Action
+        type: choice
+        options: [refresh, add, remove]
+        default: refresh
+      feed:
+        description: Feed
+        type: choice
+        options: [telegram, facebook]
+        default: telegram
+      source:
+        description: Public Telegram @username or link, or Facebook page URL
+        type: string
+      name:
+        description: Display name for a new source (optional)
+        type: string
   push:
     branches: [main]
     paths:
@@ -10,6 +27,7 @@ on:
       - 'rss_monitor.py'
       - 'telegram_collector.py'
       - 'telegram.json'
+      - 'manage_sources.py'
       - '.github/workflows/rss.yml'
   schedule:
     - cron: '17 */2 * * *'
@@ -19,10 +37,11 @@ permissions:
 
 concurrency:
   group: facebook-rss-feed-v2
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -30,14 +49,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
+      - name: Apply source change
+        if: github.event_name == 'workflow_dispatch' && inputs.action != 'refresh'
+        env:
+          SOURCE_FEED: ${{ inputs.feed }}
+          SOURCE_ACTION: ${{ inputs.action }}
+          SOURCE_VALUE: ${{ inputs.source }}
+          SOURCE_NAME: ${{ inputs.name }}
+        run: python manage_sources.py "$SOURCE_FEED" "$SOURCE_ACTION" "$SOURCE_VALUE" --name="$SOURCE_NAME"
+
       - name: Check collector syntax
-        run: python -m py_compile check_facebook.py rss_monitor.py telegram_collector.py
+        run: python -m py_compile check_facebook.py rss_monitor.py telegram_collector.py manage_sources.py
 
       - name: Install Playwright
         run: |
@@ -72,13 +101,11 @@ jobs:
 
       - name: Commit feed and seen posts
         run: |
-          git config pull.rebase true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/feed.xml docs/feed-test.xml docs/telegram.xml state/posts.json
+          git add pages.json telegram.json docs/feed.xml docs/feed-test.xml docs/telegram.xml state/posts.json
           if ! git diff --cached --quiet; then
             git commit -m "Update Facebook and Telegram RSS"
-            git pull --rebase -X theirs origin main
             git push origin HEAD:main
           else
             echo "No feed changes"

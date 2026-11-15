@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from email.utils import format_datetime
 from html import escape
 from pathlib import Path
+from textwrap import shorten
 from urllib.parse import urlsplit, urlunsplit, parse_qs
 from xml.etree import ElementTree as ET
 
@@ -24,7 +25,11 @@ TELEGRAM_FEED = ROOT / "docs" / "telegram.xml"
 MAX_STORED = 2000
 MAX_FEED = 300
 CONTENT_NS = "http://purl.org/rss/1.0/modules/content/"
+DC_NS = "http://purl.org/dc/elements/1.1/"
+ATOM_NS = "http://www.w3.org/2005/Atom"
 ET.register_namespace("content", CONTENT_NS)
+ET.register_namespace("dc", DC_NS)
+ET.register_namespace("atom", ATOM_NS)
 
 
 def canonical_post_url(links):
@@ -52,19 +57,74 @@ def canonical_post_url(links):
     return None
 
 
-def clean_text(raw, name):
-    raw = str(raw or "").replace("\u00a0", " ").replace("\r", "")
-    raw = re.sub(r"\s*See less(?=\s|$)", "", raw, flags=re.I)
-    lines = [line.strip() for line in raw.splitlines() if line.strip() and line.strip() != "·"]
-    if lines and (lines[0] == name or lines[0].startswith(name + " - ")):
-        lines.pop(0)
+def clean_text(raw, name, *, article_text=True):
+    raw = str(raw or "").replace("\u00a0", " ").replace("\u202f", " ")
+    lines = [line.strip() for line in raw.splitlines()]
+    if not article_text:
+        if lines and lines[-1].casefold() == "see less":
+            lines.pop()
+        return "\n".join(lines).strip()
+
     relative = r"(?:(?:about\s+)?(?:a|an|one|\d+)\s+(?:seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s+ago|just now|yesterday|\d+[smhdwy])"
     absolute = r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+\w+\s+\d{1,2},?\s+\d{4}\s+at\s+.+"
-    # Facebook may put relative and absolute dates in either order.
-    while lines and (re.fullmatch(relative, lines[0], flags=re.I) or re.fullmatch(absolute, lines[0], flags=re.I)):
+    header = re.compile(rf"(?:{relative}|{absolute}|AI (?:content|info))", re.I)
+    check_in = bool(lines and lines[0].startswith(name + " is at "))
+    while lines and (
+        not lines[0] or lines[0] in (name, "·") or header.fullmatch(lines[0])
+        or lines[0].startswith((name + " - ", name + " is at "))
+    ):
         lines.pop(0)
-    lines = [line for line in lines if not re.fullmatch(r"\d{1,2}:\d{2}\s*/\s*\d{1,2}:\d{2}", line)]
+    if check_in and lines and re.fullmatch(r"[^,]+, [^,.!?]+", lines[0]):
+        if len(lines) > 1:
+            lines.pop(0)
+
+    for index, line in enumerate(lines):
+        if (line.casefold() == "this content isn't available right now"
+                or line.casefold().startswith("all reactions:")):
+            lines = lines[:index]
+            break
+    controls = {"see less", "like", "comment", "share"}
+    while lines and not lines[-1]:
+        lines.pop()
+    had_controls = False
+    while lines and (lines[-1].casefold() in controls
+                     or re.fullmatch(r"(?:view|see) (?:\d+ |more |all )?comments?", lines[-1], re.I)):
+        had_controls |= lines.pop().casefold() != "see less"
+    if had_controls and lines and re.fullmatch(r"\d+(?:[.,]\d+)?[KM]?", lines[-1], re.I):
+        lines.pop()
     return "\n".join(lines).strip()
+
+
+def post_title(item):
+    first_line = item["text"].splitlines()[0]
+    sentence = re.split(r"(?<=[.!?…])\s+", first_line, maxsplit=1)[0]
+    if 24 <= len(sentence) <= 100:
+        return sentence
+    if len(first_line) <= 100:
+        return first_line
+    title = shorten(first_line, width=100, placeholder="…")
+    return title if title != "…" else first_line[:99] + "…"
+
+
+def post_html(item):
+    text = item["text"]
+    telegram = item.get("source_type") == "telegram"
+    paragraphs = re.split(r"\n[ \t]*\n", text) if telegram else text.splitlines()
+    return "".join(
+        "<p>" + escape(paragraph.strip()).replace("\n", "<br/>") + "</p>"
+        for paragraph in paragraphs if paragraph.strip()
+    )
+
+
+def enabled_sources():
+    facebook = json.loads((ROOT / "pages.json").read_text(encoding="utf-8"))
+    telegram = json.loads((ROOT / "telegram.json").read_text(encoding="utf-8"))
+    facebook_names = {page["name"] for page in facebook["pages"] if page.get("enabled", True)}
+    telegram_names = {
+        channel["username"].strip().lstrip("@").casefold()
+        for channel in telegram["telegram"] if channel.get("enabled", True)
+    }
+    return facebook_names, telegram_names
 
 
 def load_existing():
@@ -85,6 +145,8 @@ def build_feed(items, *, title, site_url, feed_url, description, icon_url):
     }
     for name, value in info.items():
         ET.SubElement(channel, name).text = value
+    ET.SubElement(channel, "{" + ATOM_NS + "}link", href=feed_url,
+                  rel="self", type="application/rss+xml")
     image = ET.SubElement(channel, "image")
     ET.SubElement(image, "url").text = icon_url
     ET.SubElement(image, "title").text = title
@@ -92,14 +154,14 @@ def build_feed(items, *, title, site_url, feed_url, description, icon_url):
     ET.SubElement(channel, "lastBuildDate").text = format_datetime(datetime.now(timezone.utc))
     for item in sorted(items, key=lambda x: x["first_seen"], reverse=True)[:MAX_FEED]:
         node = ET.SubElement(channel, "item")
-        ET.SubElement(node, "title").text = item["title"]
+        ET.SubElement(node, "title").text = post_title(item)
+        ET.SubElement(node, "{" + DC_NS + "}creator").text = item["source"]
         ET.SubElement(node, "link").text = item["url"]
         ET.SubElement(node, "guid", isPermaLink="true").text = item["url"]
         ET.SubElement(node, "pubDate").text = format_datetime(datetime.fromisoformat(item["first_seen"]))
-        ET.SubElement(node, "description").text = item["text"]
-        ET.SubElement(node, "{" + CONTENT_NS + "}encoded").text = (
-            "<p>" + escape(item["text"]).replace("\n", "<br/>") + "</p>"
-        )
+        html = post_html(item)
+        ET.SubElement(node, "description").text = html
+        ET.SubElement(node, "{" + CONTENT_NS + "}encoded").text = html
     return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
 
 def process(observations):
@@ -107,11 +169,8 @@ def process(observations):
     for saved in existing.values():
         if saved.get("source_type") == "telegram":
             continue
-        normalized = clean_text(saved.get("text", ""), saved.get("source", "Facebook"))
-        if normalized:
-            saved["text"] = normalized
-            heading = next((line for line in normalized.splitlines() if line.strip()), "New post")
-            saved["title"] = saved.get("source", "Facebook") + ": " + heading[:110]
+        if not saved.get("message_only"):
+            saved["text"] = clean_text(saved.get("text", ""), saved.get("source", "Facebook"))
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     new, candidates, unavailable = 0, 0, 0
     for page in observations:
@@ -126,25 +185,24 @@ def process(observations):
             if not link:
                 continue
             source = page.get("name", "Facebook")
-            content = clean_text(post.get("text"), source)
-            if not content or content.lower() in ("like", "comment", "share"):
+            message_only = bool(post.get("message_only"))
+            content = clean_text(post.get("text"), source, article_text=not message_only)
+            if not content or (not message_only and content.lower() in ("like", "comment", "share")):
                 continue
-            headline = next((line for line in content.splitlines() if line.strip()), "New post")
             if link not in existing:
                 existing[link] = {
                     "url": link,
                     "source": source,
-                    "title": source + ": " + headline[:110],
                     "text": content,
                     "first_seen": now,
+                    "message_only": message_only,
                 }
                 new += 1
-            elif content != existing[link].get("text"):
-                existing[link]["text"] = content
-                existing[link]["title"] = source + ": " + headline[:110]
+            elif message_only or not existing[link].get("message_only"):
+                existing[link].update(source=source, text=content, message_only=message_only)
     telegram_candidates = 0
     telegram_new = 0
-    tg_results = Path("results/telegram_posts.json")
+    tg_results = ROOT / "results" / "telegram_posts.json"
     if tg_results.exists():
         for channel in json.loads(tg_results.read_text(encoding="utf-8")):
             if channel.get("error"):
@@ -168,33 +226,40 @@ def process(observations):
     STATE.parent.mkdir(parents=True, exist_ok=True)
     FEED.parent.mkdir(parents=True, exist_ok=True)
     STATE.write_text(json.dumps(kept, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    facebook_items = [item for item in kept if not (
-        item.get("source_type") == "telegram" or
-        urlsplit(item.get("url", "")).hostname in ("t.me", "www.t.me", "telegram.me")
-    )]
-    telegram_items = [item for item in kept if item not in facebook_items]
+    facebook_names, telegram_names = enabled_sources()
+    facebook_items, telegram_items = [], []
+    for item in kept:
+        if not item.get("text"):
+            continue
+        url = urlsplit(item["url"])
+        if item.get("source_type") == "telegram" or url.hostname in ("t.me", "www.t.me", "telegram.me"):
+            username = url.path.strip("/").split("/")[0].casefold()
+            if username in telegram_names:
+                telegram_items.append({**item, "source_type": "telegram"})
+        elif item.get("source") in facebook_names:
+            facebook_items.append(item)
     facebook_settings = {
         "site_url": "https://www.facebook.com/",
         "description": "Public Facebook page posts, collected when accessible",
         "icon_url": "https://geomack.github.io/facebook-rss/facebook-icon.svg",
     }
     telegram_settings = {
-        "site_url": "https://t.me/prykhodkopolska",
+        "site_url": "https://t.me/",
         "description": "Public Telegram channel messages, collected when accessible",
         "icon_url": "https://geomack.github.io/facebook-rss/telegram-icon.svg",
     }
     FEED.write_bytes(build_feed(
-        facebook_items, title="Facebook | personal RSS",
+        facebook_items, title="Facebook",
         feed_url="https://geomack.github.io/facebook-rss/feed.xml",
         **facebook_settings
     ))
     FEED_TEST.write_bytes(build_feed(
-        facebook_items, title="Facebook | RSS delivery test",
+        facebook_items, title="Facebook",
         feed_url="https://geomack.github.io/facebook-rss/feed-test.xml",
         **facebook_settings
     ))
     TELEGRAM_FEED.write_bytes(build_feed(
-        telegram_items, title="Telegram | personal RSS",
+        telegram_items, title="Telegram",
         feed_url="https://geomack.github.io/facebook-rss/telegram.xml",
         **telegram_settings
     ))

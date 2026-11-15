@@ -39,7 +39,9 @@ def collect_channel(channel, initial_limit):
         content_node = node.select_one(".tgme_widget_message_text") or node.select_one(".tgme_widget_message_caption")
         if content_node is None:
             continue
-        content = content_node.get_text("\n", strip=True)
+        for line_break in content_node.find_all("br"):
+            line_break.replace_with("\n")
+        content = content_node.get_text().strip()
         if not content:
             continue
         date_node = node.select_one("time[datetime]")

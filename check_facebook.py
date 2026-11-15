@@ -34,6 +34,8 @@ def expand_post(article):
 def article_data(article, base_url):
     return article.evaluate(r'''(root, baseUrl) => {
       const nested = [...root.querySelectorAll('[role="article"]')];
+      const message = [...root.querySelectorAll('[data-ad-preview="message"], [data-ad-comet-preview="message"]')]
+        .find(el => el.closest('[role="article"]') === root && el.innerText.trim());
       let text = (root.innerText || '').trim();
       for (const comment of nested) {
         const commentText = (comment.innerText || '').trim();
@@ -49,7 +51,7 @@ def article_data(article, base_url):
         catch { return null; }
       }).filter(Boolean);
       const postLinks = links.filter(h => /\/posts\/|\/videos\/|\/reel\/|\/permalink\/|\/photo\/|story_fbid=|\/watch\/\?v=/.test(h));
-      return {text, links: [...new Set(postLinks)], nested_comments: nested.length};
+      return {text: message ? message.innerText.trim() : text, message_only: Boolean(message), links: [...new Set(postLinks)], nested_comments: nested.length};
     }''', base_url)
 
 
@@ -182,6 +184,7 @@ def main():
                         still_truncated = 'see more' in text.lower()
                         post = {
                             'text': text,
+                            'message_only': data['message_only'],
                             'length': len(text),
                             'expanded': expanded,
                             'still_truncated': still_truncated,
