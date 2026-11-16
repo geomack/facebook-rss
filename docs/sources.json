@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-16T06:43:38+00:00",
-  "run_id": "43818640503",
+  "built_at": "2026-11-16T18:39:32+00:00",
+  "run_id": "43930932769",
   "sources": [
     {
       "feed": "facebook",
@@ -66,13 +66,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 2,
       "updated": 0,
-      "in_feed": 44,
+      "in_feed": 46,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/576",
-        "date": "2026-11-13T18:43:29+00:00",
-        "title": "Польща увійде до складу європейської переговорної групи."
+        "url": "https://t.me/prykhodkopolska/578",
+        "date": "2026-11-16T18:32:51+00:00",
+        "title": "Сьогодні о 14:00 у Бельведерському палаці розпочнеться зустріч керівника президентської канцелярії…"
       },
       "error": null
     },
@@ -85,7 +85,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 6,
+      "new": 0,
       "updated": 0,
       "in_feed": 20,
       "latest": {
