@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-17T02:59:18+00:00",
-  "run_id": "44006829301",
+  "built_at": "2026-11-17T13:34:45+00:00",
+  "run_id": "44093959854",
   "sources": [
     {
       "feed": "facebook",
@@ -28,7 +28,7 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 21,
       "latest": {
@@ -84,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 7,
       "updated": 0,
-      "in_feed": 20,
+      "in_feed": 27,
       "latest": {
-        "url": "https://t.me/murex77/12410",
-        "date": "2026-11-16T04:07:32+00:00",
-        "title": "Вы просто обязаны хотя бы одним глазком взглянуть на прошлый сет по хэштегу #циклопы"
+        "url": "https://t.me/murex77/12418",
+        "date": "2026-11-17T04:10:27+00:00",
+        "title": "UPD Извините, отложку опять глючит, идут дубли."
       },
       "error": null
     }
