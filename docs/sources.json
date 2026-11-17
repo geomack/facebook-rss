@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-17T13:34:45+00:00",
-  "run_id": "44093959854",
+  "built_at": "2026-11-17T22:28:23+00:00",
+  "run_id": "44190233743",
   "sources": [
     {
       "feed": "facebook",
@@ -28,12 +28,12 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 21,
+      "in_feed": 22,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0DEKRjcpmzCiMHAGgqavuuciatmNvUmfaAMJzYoPyYFiGtogcQPWfhdhQk3fdg7NAl",
-        "date": "2026-11-17T02:59:18+00:00",
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02H5m8vHkbqnLsV8n6CksBLjUvNxpfftoWrti3PcoRFqaYvsPP3DCYUStsKuQ7jaBol",
+        "date": "2026-11-17T22:28:23+00:00",
         "title": "Нічний марш диванних військ (з підтримкою ШІ)"
       },
       "error": null
@@ -84,7 +84,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 7,
+      "new": 0,
       "updated": 0,
       "in_feed": 27,
       "latest": {
