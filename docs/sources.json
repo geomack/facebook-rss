@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-17T22:28:23+00:00",
-  "run_id": "44190233743",
+  "built_at": "2026-11-18T07:39:16+00:00",
+  "run_id": "44260466709",
   "sources": [
     {
       "feed": "facebook",
@@ -28,7 +28,7 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 22,
       "latest": {
@@ -84,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 7,
       "updated": 0,
-      "in_feed": 27,
+      "in_feed": 34,
       "latest": {
-        "url": "https://t.me/murex77/12418",
-        "date": "2026-11-17T04:10:27+00:00",
-        "title": "UPD Извините, отложку опять глючит, идут дубли."
+        "url": "https://t.me/murex77/12425",
+        "date": "2026-11-18T04:07:58+00:00",
+        "title": "Ну что - есть ли в канале философы по образованию, профессии или образу жизни?"
       },
       "error": null
     }
