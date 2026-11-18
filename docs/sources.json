@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-18T07:39:16+00:00",
-  "run_id": "44260466709",
+  "built_at": "2026-11-18T17:20:18+00:00",
+  "run_id": "44357354289",
   "sources": [
     {
       "feed": "facebook",
@@ -23,18 +23,18 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 5,
+      "found": 4,
       "selected": 1,
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 22,
+      "in_feed": 23,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02H5m8vHkbqnLsV8n6CksBLjUvNxpfftoWrti3PcoRFqaYvsPP3DCYUStsKuQ7jaBol",
-        "date": "2026-11-17T22:28:23+00:00",
-        "title": "Нічний марш диванних військ (з підтримкою ШІ)"
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0wJWXzVuFA9Wwe3dukh9ngmf1GCDpGWanFVRtDcSyoZyYcEUYBCd8yj2XLt72NG3Jl",
+        "date": "2026-11-18T17:20:18+00:00",
+        "title": "Чому одним університетам — привілеї, а іншим — конкуренція?"
       },
       "error": null
     },
@@ -65,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 2,
       "updated": 0,
-      "in_feed": 46,
+      "in_feed": 48,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/578",
-        "date": "2026-11-16T18:32:51+00:00",
-        "title": "Сьогодні о 14:00 у Бельведерському палаці розпочнеться зустріч керівника президентської канцелярії…"
+        "url": "https://t.me/prykhodkopolska/580",
+        "date": "2026-11-18T11:57:57+00:00",
+        "title": "Нещодавно в польському уряді анонсували виділення додаткових 8 млн злотих на закупівлю генераторів…"
       },
       "error": null
     },
@@ -81,16 +81,16 @@
       "source": "murex77",
       "enabled": true,
       "checked": true,
-      "found": 20,
+      "found": 15,
       "selected": 12,
       "access_attempts": [],
-      "new": 7,
+      "new": 1,
       "updated": 0,
-      "in_feed": 34,
+      "in_feed": 35,
       "latest": {
-        "url": "https://t.me/murex77/12425",
-        "date": "2026-11-18T04:07:58+00:00",
-        "title": "Ну что - есть ли в канале философы по образованию, профессии или образу жизни?"
+        "url": "https://t.me/murex77/12426",
+        "date": "2026-11-18T16:01:58+00:00",
+        "title": "Мемы по хуангейту достигли нужной степени выдержки."
       },
       "error": null
     }
