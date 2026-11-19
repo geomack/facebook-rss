@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-19T10:35:15+00:00",
-  "run_id": "44505894592",
+  "built_at": "2026-11-19T20:44:56+00:00",
+  "run_id": "44611674538",
   "sources": [
     {
       "feed": "facebook",
@@ -28,13 +28,13 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 24,
+      "in_feed": 25,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0QWpFkgEKPL3cQ3Kngsdchu65fWdHwbg3zkkfrNg5YDusCr6uDXA9iGpmCTC7X5X2l",
-        "date": "2026-11-19T00:29:02+00:00",
-        "title": "Новини британської економіки на експертному дивані (Частина 3)"
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0aLg66fiXJDPaaXqkgwNELbhtcA7h1hSWQYSqC7bhXe3S6aBxYfrk5KHH5oma4quSl",
+        "date": "2026-11-19T20:44:56+00:00",
+        "title": "А що, якби генерального директора «Київстару» обирали всі працівники?"
       },
       "error": null
     },
@@ -65,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 1,
+      "new": 3,
       "updated": 0,
-      "in_feed": 49,
+      "in_feed": 52,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/581",
-        "date": "2026-11-19T08:11:06+00:00",
-        "title": "Амінь."
+        "url": "https://t.me/prykhodkopolska/584",
+        "date": "2026-11-19T18:48:55+00:00",
+        "title": "Поки в Китаї зустрічалися Сі, Трамп і Путін, у Берліні відбулася зустріч «коаліції охочих»."
       },
       "error": null
     },
@@ -84,7 +84,7 @@
       "found": 15,
       "selected": 12,
       "access_attempts": [],
-      "new": 8,
+      "new": 0,
       "updated": 0,
       "in_feed": 43,
       "latest": {
