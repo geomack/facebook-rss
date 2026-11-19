@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-18T17:20:18+00:00",
-  "run_id": "44357354289",
+  "built_at": "2026-11-19T00:29:02+00:00",
+  "run_id": "44429242491",
   "sources": [
     {
       "feed": "facebook",
@@ -30,11 +30,11 @@
       ],
       "new": 1,
       "updated": 0,
-      "in_feed": 23,
+      "in_feed": 24,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0wJWXzVuFA9Wwe3dukh9ngmf1GCDpGWanFVRtDcSyoZyYcEUYBCd8yj2XLt72NG3Jl",
-        "date": "2026-11-18T17:20:18+00:00",
-        "title": "Чому одним університетам — привілеї, а іншим — конкуренція?"
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0QWpFkgEKPL3cQ3Kngsdchu65fWdHwbg3zkkfrNg5YDusCr6uDXA9iGpmCTC7X5X2l",
+        "date": "2026-11-19T00:29:02+00:00",
+        "title": "Новини британської економіки на експертному дивані (Частина 3)"
       },
       "error": null
     },
@@ -65,7 +65,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 2,
+      "new": 0,
       "updated": 0,
       "in_feed": 48,
       "latest": {
@@ -84,7 +84,7 @@
       "found": 15,
       "selected": 12,
       "access_attempts": [],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 35,
       "latest": {
