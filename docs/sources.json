@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-20T13:04:15+00:00",
-  "run_id": "44740936948",
+  "built_at": "2026-11-20T21:52:11+00:00",
+  "run_id": "44823972603",
   "sources": [
     {
       "feed": "facebook",
@@ -28,12 +28,12 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 25,
+      "in_feed": 26,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0aLg66fiXJDPaaXqkgwNELbhtcA7h1hSWQYSqC7bhXe3S6aBxYfrk5KHH5oma4quSl",
-        "date": "2026-11-19T20:44:56+00:00",
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02eC1TuTkLRXsiBscxYp3tTm3iq81xCGjjB5ZkTSYSyNKDK6qTMCPw6MjmkQkMB9PAl",
+        "date": "2026-11-20T21:52:11+00:00",
         "title": "А що, якби генерального директора «Київстару» обирали всі працівники?"
       },
       "error": null
@@ -65,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 5,
+      "new": 2,
       "updated": 0,
-      "in_feed": 57,
+      "in_feed": 59,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/589",
-        "date": "2026-11-20T10:40:43+00:00",
-        "title": "На Підкарпатті цими днями тривають військові навчання «коаліції охочих», у яких беруть участь…"
+        "url": "https://t.me/prykhodkopolska/591",
+        "date": "2026-11-20T13:42:39+00:00",
+        "title": "Мапа від Onet з сьогоднішними місцями падіння російських ракет та дрона у Польщі."
       },
       "error": null
     },
@@ -84,7 +84,7 @@
       "found": 19,
       "selected": 12,
       "access_attempts": [],
-      "new": 10,
+      "new": 0,
       "updated": 0,
       "in_feed": 53,
       "latest": {
