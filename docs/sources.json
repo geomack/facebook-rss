@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-20T03:31:35+00:00",
-  "run_id": "44667730843",
+  "built_at": "2026-11-20T13:04:15+00:00",
+  "run_id": "44740936948",
   "sources": [
     {
       "feed": "facebook",
@@ -65,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 5,
       "updated": 0,
-      "in_feed": 52,
+      "in_feed": 57,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/584",
-        "date": "2026-11-19T18:48:55+00:00",
-        "title": "Поки в Китаї зустрічалися Сі, Трамп і Путін, у Берліні відбулася зустріч «коаліції охочих»."
+        "url": "https://t.me/prykhodkopolska/589",
+        "date": "2026-11-20T10:40:43+00:00",
+        "title": "На Підкарпатті цими днями тривають військові навчання «коаліції охочих», у яких беруть участь…"
       },
       "error": null
     },
@@ -81,16 +81,16 @@
       "source": "murex77",
       "enabled": true,
       "checked": true,
-      "found": 15,
+      "found": 19,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 10,
       "updated": 0,
-      "in_feed": 43,
+      "in_feed": 53,
       "latest": {
-        "url": "https://t.me/murex77/12440",
-        "date": "2026-11-19T04:08:58+00:00",
-        "title": "Мужики, с праздником! "
+        "url": "https://t.me/murex77/12450",
+        "date": "2026-11-20T08:00:01+00:00",
+        "title": "Дорогие подписчики, администрация канала сегодня решила поспать чуть подольше и не смогла вовремя…"
       },
       "error": null
     }
