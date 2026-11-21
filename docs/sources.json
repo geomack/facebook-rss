@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-21T03:16:37+00:00",
-  "run_id": "44860171313",
+  "built_at": "2026-11-21T12:46:12+00:00",
+  "run_id": "44905468709",
   "sources": [
     {
       "feed": "facebook",
@@ -23,11 +23,10 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 0,
-      "selected": 0,
+      "found": 4,
+      "selected": 1,
       "access_attempts": [
-        "login_required",
-        "login_required"
+        "articles_visible"
       ],
       "new": 0,
       "updated": 0,
@@ -37,7 +36,7 @@
         "date": "2026-11-20T21:52:11+00:00",
         "title": "А що, якби генерального директора «Київстару» обирали всі працівники?"
       },
-      "error": "FACEBOOK_LOGIN_REQUIRED"
+      "error": null
     },
     {
       "feed": "facebook",
@@ -66,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 59,
+      "in_feed": 60,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/591",
-        "date": "2026-11-20T13:42:39+00:00",
-        "title": "Мапа від Onet з сьогоднішними місцями падіння російських ракет та дрона у Польщі."
+        "url": "https://t.me/prykhodkopolska/592",
+        "date": "2026-11-21T11:45:42+00:00",
+        "title": "Вчора до Польщі могло залетіти значно більше російських об'єктів, ніж встановлено наразі."
       },
       "error": null
     },
@@ -82,16 +81,16 @@
       "source": "murex77",
       "enabled": true,
       "checked": true,
-      "found": 19,
+      "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 7,
       "updated": 0,
-      "in_feed": 53,
+      "in_feed": 60,
       "latest": {
-        "url": "https://t.me/murex77/12450",
-        "date": "2026-11-20T08:00:01+00:00",
-        "title": "Дорогие подписчики, администрация канала сегодня решила поспать чуть подольше и не смогла вовремя…"
+        "url": "https://t.me/murex77/12457",
+        "date": "2026-11-21T04:08:02+00:00",
+        "title": "(То, что я говорю тринадцатилетним: многие, если не большинство, философских противоречий это…"
       },
       "error": null
     }
