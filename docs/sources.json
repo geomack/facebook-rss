@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-22T02:19:01+00:00",
-  "run_id": "44975447711",
+  "built_at": "2026-11-22T10:50:19+00:00",
+  "run_id": "45014265251",
   "sources": [
     {
       "feed": "facebook",
@@ -30,7 +30,7 @@
       ],
       "new": 0,
       "updated": 0,
-      "in_feed": 27,
+      "in_feed": 16,
       "latest": {
         "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0aeNGzJ7yaQ16v74BgewhFpXCkTokB7wDuRAG6AkQsru9DCS2kvmiRC3WfMBaqasyl",
         "date": "2026-11-21T20:35:07+00:00",
@@ -84,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 6,
       "updated": 0,
-      "in_feed": 60,
+      "in_feed": 66,
       "latest": {
-        "url": "https://t.me/murex77/12457",
-        "date": "2026-11-21T04:08:02+00:00",
-        "title": "(То, что я говорю тринадцатилетним: многие, если не большинство, философских противоречий это…"
+        "url": "https://t.me/murex77/12463",
+        "date": "2026-11-22T04:08:01+00:00",
+        "title": "Дорогие психологи, поздравляем вас с праздником и ждём ваших визиток в комментариях!"
       },
       "error": null
     }
