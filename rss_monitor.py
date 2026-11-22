@@ -189,7 +189,7 @@ def deduplicate_facebook_posts(items):
             key = ("telegram", item.get("url"))
         else:
             text = unicodedata.normalize("NFKC", str(item.get("text", "")))
-            text = re.sub(r"\\s+", " ", text).strip().casefold()
+            text = re.sub(r"\s+", " ", text).strip().casefold()
             # Avoid collapsing short generic posts such as "Nice shades."
             if len(text) < 80:
                 key = ("facebook-url", item.get("url"))
