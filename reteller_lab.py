@@ -43,8 +43,13 @@ EXTRACT_JS = r"""() => {
       photo: Boolean(root.querySelector('a[href*="/photo/"],img[src*="scontent"]')),
       video: /\/reel\/|\/videos\//.test(permalink.href) || Boolean(root.querySelector('video'))
     };
+    const labels = [...root.querySelectorAll('[aria-label], [title]')]
+      .flatMap(el => [el.getAttribute('aria-label') || '', el.getAttribute('title') || ''])
+      .join(' ');
+    const combined = (root.innerText || '') + ' ' + labels;
+    const publicLabel = /Доступно всем|Доступно каждому|Public|Доступно всім|Everyone|Публично/i.test(combined);
     out.push({url: permalink.href, text, datetime: stamp, date_label: dateLabel.trim(),
-      public_label: /Доступно всем|Public/.test(root.innerText || ''), media, has_message_node: Boolean(message)});
+      public_label: publicLabel, media, has_message_node: Boolean(message)});
   }
   return {dom_articles: all.length, posts: out};
 }""";
@@ -63,6 +68,7 @@ def canonical(url):
 def inspect(page, scrolls):
     seen = {}
     observations = []
+    non_public_candidates = 0
     for iteration in range(scrolls + 1):
         sample = page.evaluate(EXTRACT_JS)
         new = 0
@@ -73,6 +79,7 @@ def inspect(page, scrolls):
             item["url"] = link
             item["kind"] = "media_only" if not item["text"] else "text_or_caption"
             if not item["public_label"]:
+                non_public_candidates += 1
                 continue
             if link not in seen:
                 seen[link] = item
@@ -87,7 +94,7 @@ def inspect(page, scrolls):
         if iteration < scrolls:
             page.evaluate("window.scrollBy(0, Math.max(window.innerHeight * 1.4, 1000))")
             page.wait_for_timeout(1800)
-    return list(seen.values()), observations
+    return list(seen.values()), observations, non_public_candidates
 
 
 def main():
@@ -131,9 +138,10 @@ def main():
                     page.locator("input[type=password]").count()):
                 result["status"] = "session_expired_or_blocked" if state_encoded else "login_required"
             else:
-                posts, observations = inspect(page, args.scrolls)
+                posts, observations, unknown_candidates = inspect(page, args.scrolls)
                 result["posts"] = posts
                 result["observations"] = observations
+                result["unverified_candidates"] = unknown_candidates
                 result["status"] = "posts_found" if posts else "no_public_posts_found"
         except Exception as exc:
             result["status"] = "error"
@@ -146,6 +154,7 @@ def main():
         "source", "checked_at", "mode", "status", "http_status", "final_url_path")
         if k in result}, ensure_ascii=False))
     print("RETELLER_LAB_POST_COUNT: " + str(len(result["posts"])))
+    print("RETELLER_LAB_UNVERIFIED: " + str(result.get("unverified_candidates", 0)))
     for row in result["observations"]:
         print("RETELLER_LAB_SCROLL: " + json.dumps(row))
     return 0
