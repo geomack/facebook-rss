@@ -1,5 +1,7 @@
 """Isolated Facebook public-post access diagnostic. Never publishes or changes the RSS."""
 import argparse
+import base64
+import binascii
 import json
 import os
 import re
@@ -70,6 +72,8 @@ def inspect(page, scrolls):
                 continue
             item["url"] = link
             item["kind"] = "media_only" if not item["text"] else "text_or_caption"
+            if not item["public_label"]:
+                continue
             if link not in seen:
                 seen[link] = item
                 new += 1
@@ -95,9 +99,27 @@ def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     result = {"source": URL, "checked_at": datetime.now(timezone.utc).isoformat(),
               "mode": "anonymous", "status": "unknown", "posts": [], "observations": []}
+    state_encoded = os.getenv("FB_STORAGE_STATE_B64", "").strip()
+    state = None
+    if state_encoded:
+        try:
+            state = json.loads(base64.b64decode(state_encoded, validate=True))
+            if not isinstance(state, dict) or not isinstance(state.get("cookies"), list):
+                raise ValueError("Invalid Playwright storage state structure")
+            # Never print, upload, or write the credential-bearing state.
+            result["mode"] = "authenticated"
+        except (ValueError, TypeError, binascii.Error, UnicodeDecodeError, json.JSONDecodeError):
+            result["status"] = "invalid_session_secret"
+            OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            print("RETELLER_LAB: invalid_session_secret (no credential value logged)")
+            return 0
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
-        context = browser.new_context(locale="ru-RU", viewport={"width": 1365, "height": 900})
+        context_options = {"locale": "ru-RU", "viewport": {"width": 1365, "height": 900}}
+        if state:
+            context_options["storage_state"] = state
+        context = browser.new_context(**context_options)
+        state = None
         page = context.new_page()
         try:
             response = page.goto(URL, wait_until="domcontentloaded", timeout=45000)
@@ -107,15 +129,15 @@ def main():
             result["final_url_path"] = urlsplit(page.url).path
             if "/login" in urlsplit(page.url).path or (LOGIN_RE.search(body) and
                     page.locator("input[type=password]").count()):
-                result["status"] = "login_required"
+                result["status"] = "session_expired_or_blocked" if state_encoded else "login_required"
             else:
                 posts, observations = inspect(page, args.scrolls)
                 result["posts"] = posts
                 result["observations"] = observations
-                result["status"] = "posts_found" if posts else "no_posts_found"
+                result["status"] = "posts_found" if posts else "no_public_posts_found"
         except Exception as exc:
             result["status"] = "error"
-            result["error"] = type(exc).__name__ + ": " + str(exc)[:400]
+            result["error"] = type(exc).__name__  # Never log exception details containing request/session data
         finally:
             context.close()
             browser.close()
