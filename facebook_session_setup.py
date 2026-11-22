@@ -63,8 +63,20 @@ def main():
             # Required auth signals without printing cookies.
             cookie_names = {c["name"] for c in cookies}
             if {"c_user", "xs"}.issubset(cookie_names):
-                break
-            print("No active Facebook session detected in the new browser.")
+                # Cookies may exist even when Facebook has not cleared its checkpoint.
+                try:
+                    page.goto(PROFILE, wait_until="domcontentloaded", timeout=45000)
+                    page.wait_for_timeout(1500)
+                    if "/checkpoint" not in page.url and "/login" not in page.url and (
+                        page.locator('[role="article"]').count() > 0
+                        or page.locator('a[href*="/following/"]').count() > 0
+                    ):
+                        break
+                except Exception:
+                    pass
+                print("Facebook login exists, but the profile is not accessible yet.")
+            else:
+                print("No active Facebook session detected in the new browser.")
             choice = input("Press Enter to try again, or type q to quit: ").strip().lower()
             if choice == "q":
                 browser.close()
