@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-21T20:35:07+00:00",
-  "run_id": "44946987434",
+  "built_at": "2026-11-22T02:19:01+00:00",
+  "run_id": "44975447711",
   "sources": [
     {
       "feed": "facebook",
@@ -28,7 +28,7 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 27,
       "latest": {
