@@ -3,11 +3,11 @@ Opens a dedicated browser for a manual Facebook login and, with explicit approva
 passes Facebook-only Playwright storage state directly to GitHub Actions secrets.
 Never saves the session to disk or prints the secret.
 """
+import argparse
 import base64
 import json
 import subprocess
 import sys
-from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright
 
@@ -32,14 +32,21 @@ def check_gh():
 
 
 def main():
+    parser = argparse.ArgumentParser(description="One-time Facebook authentication in a separate browser")
+    parser.add_argument("--browser", choices=("chrome", "firefox", "webkit", "chromium"),
+                        default="chrome", help="chrome=installed genuine Google Chrome")
+    args = parser.parse_args()
     if not check_gh():
         return 1
 
-    print("Opening a SEPARATE Chromium browser. Sign in to Facebook there.")
+    print("Opening a SEPARATE " + args.browser + " browser. Sign in to Facebook there.")
     print("This script does NOT read any cookies from your existing Chrome.")
     print("Do not close the new browser until this script finishes.")
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=False)
+        if args.browser == "chrome":
+            browser = pw.chromium.launch(channel="chrome", headless=False)
+        else:
+            browser = getattr(pw, args.browser).launch(headless=False)
         context = browser.new_context(locale="ru-RU", viewport={"width": 1365, "height": 900})
         page = context.new_page()
         page.goto(PROFILE, wait_until="domcontentloaded", timeout=60000)
@@ -93,7 +100,17 @@ def main():
             print("GitHub secret upload failed: " + result.stderr.strip(), file=sys.stderr)
             return 1
         print("Success: GitHub secret is configured. No local session file was created.")
-        print("The isolated Reteller workflow can now be run in authenticated mode.")
+        print("Starting the isolated cloud test now...")
+        launch = subprocess.run(
+            ["gh", "workflow", "run", "reteller-lab.yml", "--repo", REPO,
+             "--ref", "main"], capture_output=True, text=True
+        )
+        if launch.returncode:
+            print("Session saved, but workflow start failed: " + launch.stderr.strip())
+            print("Run manually: gh workflow run reteller-lab.yml --repo " + REPO)
+            return 1
+        print("Cloud test requested. Check https://github.com/" + REPO +
+              "/actions/workflows/reteller-lab.yml")
     return 0
 
 
