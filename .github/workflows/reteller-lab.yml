@@ -25,6 +25,8 @@ jobs:
           python -m pip install playwright
           python -m playwright install --with-deps chromium
       - name: Validate and run isolated test
+        env:
+          FB_STORAGE_STATE_B64: ${{ secrets.FB_STORAGE_STATE_B64 }}
         run: |
           python -m py_compile reteller_lab.py
           python -u reteller_lab.py --scrolls 5
@@ -32,6 +34,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: reteller-lab-anonymous
+          name: reteller-lab-report
           path: results/reteller_lab.json
           if-no-files-found: warn
