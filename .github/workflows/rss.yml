@@ -116,7 +116,7 @@ jobs:
                       source.get("name", "Unknown")))
           if os.environ.get("GITHUB_STEP_SUMMARY"):
               with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as file:
-                  file.write("\\n".join(lines) + "\\n")
+                  file.write("\n".join(lines) + "\n")
           PY
 
       - name: Upload diagnostics
