@@ -174,6 +174,43 @@ def build_feed(items, *, title, site_url, feed_url, description, icon_url):
         ET.SubElement(node, "{" + CONTENT_NS + "}encoded").text = html
     return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
 
+def deduplicate_facebook_posts(items):
+    """Collapse exact repeated Facebook text from the same source.
+
+    Keep the newest permalink. Telegram is intentionally excluded because
+    album messages can legitimately share the same caption.
+    """
+    import unicodedata
+
+    kept_by_key = {}
+    removed = 0
+    for item in items:
+        if item.get("source_type") == "telegram":
+            key = ("telegram", item.get("url"))
+        else:
+            text = unicodedata.normalize("NFKC", str(item.get("text", "")))
+            text = re.sub(r"\\s+", " ", text).strip().casefold()
+            # Avoid collapsing short generic posts such as "Nice shades."
+            if len(text) < 80:
+                key = ("facebook-url", item.get("url"))
+            else:
+                key = ("facebook-text", item.get("source", ""), text)
+
+        previous = kept_by_key.get(key)
+        if previous is None:
+            kept_by_key[key] = item
+            continue
+
+        # Retain the most recently discovered post and its working permalink.
+        previous_date = previous.get("published_at") or previous.get("first_seen", "")
+        current_date = item.get("published_at") or item.get("first_seen", "")
+        if current_date >= previous_date:
+            kept_by_key[key] = item
+        removed += 1
+
+    return list(kept_by_key.values()), removed
+
+
 def process(observations):
     existing = load_existing()
     for saved in existing.values():
@@ -251,7 +288,9 @@ def process(observations):
                         updated_by_source["telegram", source_id] += 1
                     existing[url].update(item)
     print(f"TELEGRAM_RSS: candidates={telegram_candidates} new={telegram_new}", flush=True)
-    kept = sorted(existing.values(), key=lambda x: x["first_seen"], reverse=True)[:MAX_STORED]
+    existing_items, duplicate_facebook_removed = deduplicate_facebook_posts(list(existing.values()))
+    print(f"FACEBOOK_DUPLICATES_REMOVED: {duplicate_facebook_removed}", flush=True)
+    kept = sorted(existing_items, key=lambda x: x["first_seen"], reverse=True)[:MAX_STORED]
     STATE.parent.mkdir(parents=True, exist_ok=True)
     FEED.parent.mkdir(parents=True, exist_ok=True)
     STATE.write_text(json.dumps(kept, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
