@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-23T02:53:30+00:00",
-  "run_id": "45102671380",
+  "built_at": "2026-11-23T14:53:33+00:00",
+  "run_id": "45198230032",
   "sources": [
     {
       "feed": "facebook",
@@ -23,12 +23,13 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 4,
-      "selected": 1,
+      "found": 0,
+      "selected": 0,
       "access_attempts": [
-        "articles_visible"
+        "login_required",
+        "login_required"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 17,
       "latest": {
@@ -36,7 +37,7 @@
         "date": "2026-11-23T02:53:30+00:00",
         "title": "На Open Day я запрошував вас подивитися, чим живе КАІ, не встаючи з дивана."
       },
-      "error": null
+      "error": "FACEBOOK_LOGIN_REQUIRED"
     },
     {
       "feed": "facebook",
@@ -65,13 +66,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 60,
+      "in_feed": 61,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/592",
-        "date": "2026-11-21T11:45:42+00:00",
-        "title": "Вчора до Польщі могло залетіти значно більше російських об'єктів, ніж встановлено наразі."
+        "url": "https://t.me/prykhodkopolska/593",
+        "date": "2026-11-23T08:43:20+00:00",
+        "title": "Польський євродепутат Міхал Дворчик із «Розвитку плюс», який на початку повномасштабної війни був…"
       },
       "error": null
     },
@@ -84,13 +85,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 6,
       "updated": 0,
-      "in_feed": 66,
+      "in_feed": 72,
       "latest": {
-        "url": "https://t.me/murex77/12463",
-        "date": "2026-11-22T04:08:01+00:00",
-        "title": "Дорогие психологи, поздравляем вас с праздником и ждём ваших визиток в комментариях!"
+        "url": "https://t.me/murex77/12469",
+        "date": "2026-11-23T06:44:06+00:00",
+        "title": "Спасибо Иену Кёртису (на видео не он) за создание (или популяризацию?) идеального музыкального…"
       },
       "error": null
     }
