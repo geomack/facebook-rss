@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-24T02:56:42+00:00",
-  "run_id": "45315899209",
+  "built_at": "2026-11-24T14:57:25+00:00",
+  "run_id": "45419716385",
   "sources": [
     {
       "feed": "facebook",
@@ -30,11 +30,11 @@
       ],
       "new": 1,
       "updated": 0,
-      "in_feed": 18,
+      "in_feed": 19,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid029ckHavCmmw5t6WX5HnEJLFdkSD3JDGfQeYkv6qE1EUM8Rm8jHDB9WCMJEiCKc2erl",
-        "date": "2026-11-24T02:56:42+00:00",
-        "title": "«Проблема соціалізму в тому, що рано чи пізно у вас закінчуються чужі гроші»."
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0zZfX4VSNB69nrQH8BwrZr5sRMdA5KmY4qUHkfxd3oxawcKpE25QsR7HSEbAK1XhGl",
+        "date": "2026-11-24T14:57:25+00:00",
+        "title": "Сидячи на дівані з новим The Daiily Telegraph"
       },
       "error": null
     },
@@ -65,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 2,
       "updated": 0,
-      "in_feed": 61,
+      "in_feed": 63,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/593",
-        "date": "2026-11-23T08:43:20+00:00",
-        "title": "Польський євродепутат Міхал Дворчик із «Розвитку плюс», який на початку повномасштабної війни був…"
+        "url": "https://t.me/prykhodkopolska/595",
+        "date": "2026-11-24T10:52:16+00:00",
+        "title": "Дрон перебував у повітряному просторі Польщі дев’ять хвилин і пролетів на 20 кілометрів углиб…"
       },
       "error": null
     },
@@ -84,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 8,
       "updated": 0,
-      "in_feed": 72,
+      "in_feed": 80,
       "latest": {
-        "url": "https://t.me/murex77/12469",
-        "date": "2026-11-23T06:44:06+00:00",
-        "title": "Спасибо Иену Кёртису (на видео не он) за создание (или популяризацию?) идеального музыкального…"
+        "url": "https://t.me/murex77/12477",
+        "date": "2026-11-24T04:09:32+00:00",
+        "title": "Самые сильные мемы про эволюцию были опубликованы ранее, сегодняшний сет больше в поддержку слабых…"
       },
       "error": null
     }
