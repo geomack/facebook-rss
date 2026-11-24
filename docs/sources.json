@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-23T14:53:33+00:00",
-  "run_id": "45198230032",
+  "built_at": "2026-11-24T02:56:42+00:00",
+  "run_id": "45315899209",
   "sources": [
     {
       "feed": "facebook",
@@ -23,21 +23,20 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 0,
-      "selected": 0,
+      "found": 4,
+      "selected": 1,
       "access_attempts": [
-        "login_required",
-        "login_required"
+        "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 17,
+      "in_feed": 18,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02SSktGvdWmuBPFS3ocS5hAGJ2t9K4u9qpNHWMrzXkceiWKPG3ZyTEq4HHRSvsLpp6l",
-        "date": "2026-11-23T02:53:30+00:00",
-        "title": "На Open Day я запрошував вас подивитися, чим живе КАІ, не встаючи з дивана."
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid029ckHavCmmw5t6WX5HnEJLFdkSD3JDGfQeYkv6qE1EUM8Rm8jHDB9WCMJEiCKc2erl",
+        "date": "2026-11-24T02:56:42+00:00",
+        "title": "«Проблема соціалізму в тому, що рано чи пізно у вас закінчуються чужі гроші»."
       },
-      "error": "FACEBOOK_LOGIN_REQUIRED"
+      "error": null
     },
     {
       "feed": "facebook",
@@ -66,7 +65,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 61,
       "latest": {
@@ -85,7 +84,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 6,
+      "new": 0,
       "updated": 0,
       "in_feed": 72,
       "latest": {
