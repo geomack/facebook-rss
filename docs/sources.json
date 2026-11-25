@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-25T00:51:07+00:00",
-  "run_id": "45521141705",
+  "built_at": "2026-11-25T11:25:55+00:00",
+  "run_id": "45604257012",
   "sources": [
     {
       "feed": "facebook",
@@ -23,21 +23,20 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 0,
-      "selected": 0,
+      "found": 3,
+      "selected": 1,
       "access_attempts": [
-        "login_required",
-        "login_required"
+        "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 19,
+      "in_feed": 20,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0zZfX4VSNB69nrQH8BwrZr5sRMdA5KmY4qUHkfxd3oxawcKpE25QsR7HSEbAK1XhGl",
-        "date": "2026-11-24T14:57:25+00:00",
-        "title": "Сидячи на дівані з новим The Daiily Telegraph"
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02MKbcXwGxMrPpP8P2yekojhca1rhFnmkiPybwTVrQkui37LyLNQ5JgBGjmtDgDC64l",
+        "date": "2026-11-25T11:25:55+00:00",
+        "title": "Математичний трилер осені: як я, золотий медаліст і випускник мехмату, розбирався з «доведенням»…"
       },
-      "error": "FACEBOOK_LOGIN_REQUIRED"
+      "error": null
     },
     {
       "feed": "facebook",
@@ -85,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 8,
       "updated": 0,
-      "in_feed": 80,
+      "in_feed": 88,
       "latest": {
-        "url": "https://t.me/murex77/12477",
-        "date": "2026-11-24T04:09:32+00:00",
-        "title": "Самые сильные мемы про эволюцию были опубликованы ранее, сегодняшний сет больше в поддержку слабых…"
+        "url": "https://t.me/murex77/12486",
+        "date": "2026-11-25T07:58:57+00:00",
+        "title": "Не хотел публиковать сегодня это видео в силу излишней очевидности, но зумеры в комментах разбили…"
       },
       "error": null
     }
