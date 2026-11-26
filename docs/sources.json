@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-26T13:59:26+00:00",
-  "run_id": "45834323936",
+  "built_at": "2026-11-26T23:03:38+00:00",
+  "run_id": "45908540857",
   "sources": [
     {
       "feed": "facebook",
@@ -32,9 +32,9 @@
       "updated": 0,
       "in_feed": 21,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0D3HyJJ8WW56S8P58rB3bUrkLVjhRaSRBwdp6Hg5sGaJzfTz1mprbtizEA2vXfDD4l",
-        "date": "2026-11-26T13:59:26+00:00",
-        "title": "Шість кроків до 2028 року: що далі з експериментом у КАІ та головні висновки за два роки?"
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02M9ScEo1DYCTyrtsmRdhmccAK6JHgY8LhJoYrhZbQVsakjrRCTSU78nU4VRCfcZSCl",
+        "date": "2026-11-26T23:03:38+00:00",
+        "title": "Математичний трилер осені: як я, золотий медаліст і випускник мехмату, розбирався з «доведенням»…"
       },
       "error": null
     },
@@ -65,7 +65,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 64,
       "latest": {
@@ -85,7 +85,7 @@
       "selected": 12,
       "access_attempts": [],
       "new": 0,
-      "updated": 1,
+      "updated": 0,
       "in_feed": 94,
       "latest": {
         "url": "https://t.me/murex77/12492",
