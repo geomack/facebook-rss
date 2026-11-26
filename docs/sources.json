@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-26T04:12:43+00:00",
-  "run_id": "45753661138",
+  "built_at": "2026-11-26T13:59:26+00:00",
+  "run_id": "45834323936",
   "sources": [
     {
       "feed": "facebook",
@@ -28,13 +28,13 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 20,
+      "in_feed": 21,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0HmxRcmebWZG5jVqawoTiaCcaipZ3EMQr5ERJ1xfNTxwUvr2JKvKBAQ2gvyVzBo1pl",
-        "date": "2026-11-25T21:48:04+00:00",
-        "title": "Математичний трилер осені: як я, золотий медаліст і випускник мехмату, розбирався з «доведенням»…"
+        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid0D3HyJJ8WW56S8P58rB3bUrkLVjhRaSRBwdp6Hg5sGaJzfTz1mprbtizEA2vXfDD4l",
+        "date": "2026-11-26T13:59:26+00:00",
+        "title": "Шість кроків до 2028 року: що далі з експериментом у КАІ та головні висновки за два роки?"
       },
       "error": null
     },
@@ -65,13 +65,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 63,
+      "in_feed": 64,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/595",
-        "date": "2026-11-24T10:52:16+00:00",
-        "title": "Дрон перебував у повітряному просторі Польщі дев’ять хвилин і пролетів на 20 кілометрів углиб…"
+        "url": "https://t.me/prykhodkopolska/596",
+        "date": "2026-11-26T08:00:17+00:00",
+        "title": "Учора ввечері у Варшаві поблизу Мінкульту та Президентського палацу підпалив себе 22-річний…"
       },
       "error": null
     },
@@ -84,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 6,
-      "updated": 0,
+      "new": 0,
+      "updated": 1,
       "in_feed": 94,
       "latest": {
         "url": "https://t.me/murex77/12492",
         "date": "2026-11-26T04:08:37+00:00",
-        "title": "Есть ли в канале профессионалы или любители Египтологии?"
+        "title": "Есть ли в канале профессионалы или любители египтологии?"
       },
       "error": null
     }
