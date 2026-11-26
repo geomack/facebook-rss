@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-25T21:48:04+00:00",
-  "run_id": "45707510249",
+  "built_at": "2026-11-26T04:12:43+00:00",
+  "run_id": "45753661138",
   "sources": [
     {
       "feed": "facebook",
@@ -28,7 +28,7 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 20,
       "latest": {
@@ -84,13 +84,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 6,
       "updated": 0,
-      "in_feed": 88,
+      "in_feed": 94,
       "latest": {
-        "url": "https://t.me/murex77/12486",
-        "date": "2026-11-25T07:58:57+00:00",
-        "title": "Не хотел публиковать сегодня это видео в силу излишней очевидности, но зумеры в комментах разбили…"
+        "url": "https://t.me/murex77/12492",
+        "date": "2026-11-26T04:08:37+00:00",
+        "title": "Есть ли в канале профессионалы или любители Египтологии?"
       },
       "error": null
     }
