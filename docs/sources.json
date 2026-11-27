@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-26T23:03:38+00:00",
-  "run_id": "45908540857",
+  "built_at": "2026-11-27T08:45:46+00:00",
+  "run_id": "45968053126",
   "sources": [
     {
       "feed": "facebook",
@@ -23,12 +23,13 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 4,
-      "selected": 1,
+      "found": 0,
+      "selected": 0,
       "access_attempts": [
-        "articles_visible"
+        "login_required",
+        "login_required"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 21,
       "latest": {
@@ -36,7 +37,7 @@
         "date": "2026-11-26T23:03:38+00:00",
         "title": "Математичний трилер осені: як я, золотий медаліст і випускник мехмату, розбирався з «доведенням»…"
       },
-      "error": null
+      "error": "FACEBOOK_LOGIN_REQUIRED"
     },
     {
       "feed": "facebook",
@@ -65,13 +66,13 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 64,
+      "in_feed": 65,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/596",
-        "date": "2026-11-26T08:00:17+00:00",
-        "title": "Учора ввечері у Варшаві поблизу Мінкульту та Президентського палацу підпалив себе 22-річний…"
+        "url": "https://t.me/prykhodkopolska/597",
+        "date": "2026-11-27T07:26:34+00:00",
+        "title": "Минулого тижня стало відомо про затримання українців за написи «Слава УПА» на пам'ятниках у Познані."
       },
       "error": null
     },
@@ -81,16 +82,16 @@
       "source": "murex77",
       "enabled": true,
       "checked": true,
-      "found": 20,
+      "found": 18,
       "selected": 12,
       "access_attempts": [],
-      "new": 0,
+      "new": 5,
       "updated": 0,
-      "in_feed": 94,
+      "in_feed": 99,
       "latest": {
-        "url": "https://t.me/murex77/12492",
-        "date": "2026-11-26T04:08:37+00:00",
-        "title": "Есть ли в канале профессионалы или любители египтологии?"
+        "url": "https://t.me/murex77/12499",
+        "date": "2026-11-27T04:06:37+00:00",
+        "title": "Не все герои носят плащи..."
       },
       "error": null
     }
