@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-27T08:45:46+00:00",
-  "run_id": "45968053126",
+  "built_at": "2026-11-27T19:30:53+00:00",
+  "run_id": "46057114792",
   "sources": [
     {
       "feed": "facebook",
@@ -23,21 +23,20 @@
       "source": "https://www.facebook.com/peter.chernyshov",
       "enabled": true,
       "checked": true,
-      "found": 0,
-      "selected": 0,
+      "found": 4,
+      "selected": 1,
       "access_attempts": [
-        "login_required",
-        "login_required"
+        "articles_visible"
       ],
-      "new": 0,
+      "new": 1,
       "updated": 0,
-      "in_feed": 21,
+      "in_feed": 22,
       "latest": {
-        "url": "https://www.facebook.com/peter.chernyshov/posts/pfbid02M9ScEo1DYCTyrtsmRdhmccAK6JHgY8LhJoYrhZbQVsakjrRCTSU78nU4VRCfcZSCl",
-        "date": "2026-11-26T23:03:38+00:00",
-        "title": "Математичний трилер осені: як я, золотий медаліст і випускник мехмату, розбирався з «доведенням»…"
+        "url": "https://www.facebook.com/reel/40180174781628863",
+        "date": "2026-11-27T19:30:53+00:00",
+        "title": "Кого б ви найняли керувати університетом?"
       },
-      "error": "FACEBOOK_LOGIN_REQUIRED"
+      "error": null
     },
     {
       "feed": "facebook",
@@ -68,11 +67,11 @@
       "access_attempts": [],
       "new": 1,
       "updated": 0,
-      "in_feed": 65,
+      "in_feed": 66,
       "latest": {
-        "url": "https://t.me/prykhodkopolska/597",
-        "date": "2026-11-27T07:26:34+00:00",
-        "title": "Минулого тижня стало відомо про затримання українців за написи «Слава УПА» на пам'ятниках у Познані."
+        "url": "https://t.me/prykhodkopolska/598",
+        "date": "2026-11-27T12:41:07+00:00",
+        "title": "З'явився традиційний рейтинг довіри до польських політиків від IBRiS для видання Onet."
       },
       "error": null
     },
@@ -82,16 +81,16 @@
       "source": "murex77",
       "enabled": true,
       "checked": true,
-      "found": 18,
+      "found": 12,
       "selected": 12,
       "access_attempts": [],
-      "new": 5,
-      "updated": 0,
-      "in_feed": 99,
+      "new": 1,
+      "updated": 1,
+      "in_feed": 100,
       "latest": {
-        "url": "https://t.me/murex77/12499",
-        "date": "2026-11-27T04:06:37+00:00",
-        "title": "Не все герои носят плащи..."
+        "url": "https://t.me/murex77/12500",
+        "date": "2026-11-27T16:03:40+00:00",
+        "title": "Первая серия - вот тут https://t.me/murex77/12426"
       },
       "error": null
     }
