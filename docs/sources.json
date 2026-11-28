@@ -1,6 +1,6 @@
 {
-  "built_at": "2026-11-27T19:30:53+00:00",
-  "run_id": "46057114792",
+  "built_at": "2026-11-28T02:45:47+00:00",
+  "run_id": "46099569568",
   "sources": [
     {
       "feed": "facebook",
@@ -28,7 +28,7 @@
       "access_attempts": [
         "articles_visible"
       ],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 22,
       "latest": {
@@ -65,7 +65,7 @@
       "found": 20,
       "selected": 12,
       "access_attempts": [],
-      "new": 1,
+      "new": 0,
       "updated": 0,
       "in_feed": 66,
       "latest": {
@@ -84,8 +84,8 @@
       "found": 12,
       "selected": 12,
       "access_attempts": [],
-      "new": 1,
-      "updated": 1,
+      "new": 0,
+      "updated": 0,
       "in_feed": 100,
       "latest": {
         "url": "https://t.me/murex77/12500",
